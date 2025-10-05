@@ -20,7 +20,7 @@ class CounterView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-  final count = ref.watch<int>(counterProvider);
+    final count = ref.watch<int>(counterProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.counterAppBarTitle)),
@@ -30,12 +30,14 @@ class CounterView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () => ref.read<CounterNotifier>(counterProvider.notifier).increment(),
+            onPressed: () =>
+                ref.read<CounterNotifier>(counterProvider.notifier).increment(),
             child: const Icon(Icons.add),
           ),
           const SizedBox(height: 8),
           FloatingActionButton(
-            onPressed: () => ref.read<CounterNotifier>(counterProvider.notifier).decrement(),
+            onPressed: () =>
+                ref.read<CounterNotifier>(counterProvider.notifier).decrement(),
             child: const Icon(Icons.remove),
           ),
         ],

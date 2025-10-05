@@ -10,4 +10,6 @@ class CounterNotifier extends Notifier<int> {
   void decrement() => state = state - 1;
 }
 
-final counterProvider = NotifierProvider<CounterNotifier, int>(CounterNotifier.new);
+final counterProvider = NotifierProvider<CounterNotifier, int>(
+  CounterNotifier.new,
+);
