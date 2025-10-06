@@ -18,6 +18,15 @@ class SectionTitle extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {},
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.primary,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           child: const Text('See all'),
         ),
       ],

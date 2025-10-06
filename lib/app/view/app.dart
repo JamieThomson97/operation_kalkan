@@ -9,12 +9,28 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
+    const surfaceBackground = Color(0xFFF4F5F7);
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF3D5AFE),
+    );
 
     return MaterialApp.router(
       routerConfig: router,
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        colorScheme: colorScheme,
+        scaffoldBackgroundColor: surfaceBackground,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: surfaceBackground,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+          foregroundColor: Colors.black87,
         ),
         useMaterial3: true,
       ),

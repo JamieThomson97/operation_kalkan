@@ -13,52 +13,53 @@ class CarouselCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap == null ? null : () => onTap!(item),
-      child: Container(
-        width: 260,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+    final borderRadius = BorderRadius.circular(20);
+    final subtleTextColor = Colors.grey[600];
+
+    return SizedBox(
+      width: 240,
+      child: Material(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: borderRadius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap == null ? null : () => onTap!(item),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  color: Colors.grey[300],
-                  child: item.image != null
-                      ? Image.network(item.image!, fit: BoxFit.cover)
-                      : const Icon(
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: item.image != null
+                    ? Image.network(
+                        item.image!,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        color: Colors.grey[300],
+                        child: const Icon(
                           Icons.photo,
                           size: 64,
                           color: Colors.white70,
                         ),
-                ),
+                      ),
               ),
               Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       item.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       item.subtitle,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: subtleTextColor,
+                      ),
                     ),
                   ],
                 ),
