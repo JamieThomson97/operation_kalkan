@@ -144,8 +144,19 @@ class _VendorPageState extends State<VendorPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: theme.dividerColor.withOpacity(0.2),
+                      ),
+                      const SizedBox(height: 16),
                       _buildInfoRow(context),
+                      const SizedBox(height: 16),
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: theme.dividerColor.withOpacity(0.2),
+                      ),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
