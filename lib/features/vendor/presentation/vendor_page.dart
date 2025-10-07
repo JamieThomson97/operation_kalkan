@@ -90,8 +90,8 @@ class VendorPage extends StatelessWidget {
                           Expanded(
                             child: Text(
                               item.title,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w400,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -117,10 +117,12 @@ class VendorPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         item.subtitle,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w300,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      _buildInfoRow(theme),
                       const SizedBox(height: 24),
                       Text(
                         'Hours',
@@ -347,6 +349,115 @@ class VendorPage extends StatelessWidget {
         onPressed: () => Navigator.of(context).maybePop(),
         icon: const Icon(Icons.arrow_back),
         color: Colors.black87,
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(ThemeData theme) {
+    final dividerColor = theme.dividerColor.withOpacity(0.2);
+    final labelStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+    );
+    final valueStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+    );
+    final secondaryValueStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurface.withOpacity(0.65),
+      fontWeight: FontWeight.w400,
+      height: 1.2,
+    );
+
+    Widget buildCell({
+      required Widget child,
+      bool showDivider = true,
+    }) {
+      return Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(
+              right: showDivider
+                  ? BorderSide(color: dividerColor, width: 0.8)
+                  : BorderSide.none,
+            ),
+          ),
+          child: child,
+        ),
+      );
+    }
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.zero,
+      ),
+      child: Row(
+        children: [
+          buildCell(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Rating', style: labelStyle),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.star, color: Colors.amber[600], size: 18),
+                    const SizedBox(width: 6),
+                    Text('4.8', style: valueStyle),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text('500+ reviews', style: secondaryValueStyle),
+              ],
+            ),
+          ),
+          buildCell(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 18,
+                  color: labelStyle?.color,
+                ),
+                const SizedBox(height: 6),
+                Text('Info and Contact', style: labelStyle),
+              ],
+            ),
+          ),
+          buildCell(
+            showDivider: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Distance', style: labelStyle),
+                const SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.directions_walk,
+                      size: 18,
+                      color: labelStyle?.color,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '0.5 mi',
+                        style: valueStyle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
