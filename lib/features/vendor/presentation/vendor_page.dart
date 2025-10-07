@@ -49,11 +49,34 @@ class VendorPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
-                Text(
-                  item.title,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.title,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton(
+                      onPressed: () {},
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: const Text('Book'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -99,7 +122,7 @@ class VendorPage extends StatelessWidget {
                         Divider(
                           height: 1,
                           thickness: 1,
-                          color: theme.dividerColor.withValues(alpha: 0.2),
+                          color: theme.dividerColor.withOpacity(0.2),
                         ),
                     ],
                   ],
