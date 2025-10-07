@@ -47,7 +47,7 @@ class VendorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final media = MediaQuery.of(context);
-    final heroHeight = media.size.height * 0.5;
+    final heroHeight = media.size.height * 0.35;
     final photoGroups = [
       for (var i = 0; i < _photoGallery.length; i += 3)
         _photoGallery.sublist(
@@ -73,18 +73,15 @@ class VendorPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(28),
-                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: .05),
                         blurRadius: 18,
                         offset: const Offset(0, -2),
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -145,15 +142,13 @@ class VendorPage extends StatelessWidget {
                                 children: [
                                   Text(
                                     _weeklyHours[i].key,
-                                    style:
-                                        theme.textTheme.bodyMedium?.copyWith(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w300,
                                     ),
                                   ),
                                   Text(
                                     _weeklyHours[i].value,
-                                    style:
-                                        theme.textTheme.bodyMedium?.copyWith(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
@@ -191,8 +186,7 @@ class VendorPage extends StatelessWidget {
                                 children: [
                                   Text(
                                     _contactDetails[i].key,
-                                    style:
-                                        theme.textTheme.bodyMedium?.copyWith(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w300,
                                     ),
                                   ),
@@ -201,10 +195,10 @@ class VendorPage extends StatelessWidget {
                                     child: Text(
                                       _contactDetails[i].value,
                                       textAlign: TextAlign.right,
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.w400,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -236,15 +230,15 @@ class VendorPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       SizedBox(
                         height: 240,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.only(right: 16),
+                          padding: const EdgeInsets.only(right: 8),
                           itemCount: photoGroups.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 16),
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
                           itemBuilder: (context, groupIndex) {
                             final group = photoGroups[groupIndex];
                             if (group.isEmpty) {
@@ -264,7 +258,7 @@ class VendorPage extends StatelessWidget {
                                     ),
                                   ),
                                   if (group.length > 1) ...[
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: 8),
                                     Expanded(
                                       flex: 1,
                                       child: Column(
@@ -278,7 +272,7 @@ class VendorPage extends StatelessWidget {
                                             ),
                                           ),
                                           if (group.length > 2) ...[
-                                            const SizedBox(height: 12),
+                                            const SizedBox(height: 8),
                                             Expanded(
                                               child: _buildPhotoTile(
                                                 context,
