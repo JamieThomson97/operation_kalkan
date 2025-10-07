@@ -584,10 +584,8 @@ class _VendorPageState extends State<VendorPage> {
                   label: Text(category.title),
                   selected: selected,
                   onSelected: (_) => _handleMenuTabTap(index),
-                  selectedColor: theme.colorScheme.primary.withValues(
-                    alpha: 0.14,
-                  ),
-                  backgroundColor: Colors.transparent,
+                  selectedColor: Colors.transparent,
+                  backgroundColor: Colors.white,
                   showCheckmark: false,
                   labelStyle: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
@@ -597,11 +595,11 @@ class _VendorPageState extends State<VendorPage> {
                   ),
                   side: BorderSide(
                     color: selected
-                        ? Colors.transparent
-                        : theme.colorScheme.outline.withValues(alpha: 0.4),
+                        ? theme.colorScheme.primary.withValues(alpha: 0.45)
+                        : theme.dividerColor.withValues(alpha: 0.4),
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 );
               },
@@ -621,12 +619,6 @@ class _VendorPageState extends State<VendorPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Menu',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
           const SizedBox(height: 16),
           for (var i = 0; i < VendorPage.menuCategories.length; i++) ...[
             _buildMenuSection(context, VendorPage.menuCategories[i], i),
