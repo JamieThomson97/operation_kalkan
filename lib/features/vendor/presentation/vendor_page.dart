@@ -299,11 +299,14 @@ class _VendorPageState extends State<VendorPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: .05),
-                        blurRadius: 18,
-                        offset: const Offset(0, -2),
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 28,
+                        offset: const Offset(0, -6),
                       ),
                     ],
                   ),
@@ -312,31 +315,46 @@ class _VendorPageState extends State<VendorPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Text(
                               widget.item.title,
                               style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           const SizedBox(width: 12),
-                          FilledButton(
-                            onPressed: () {},
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.black87,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              FilledButton(
+                                onPressed: () {},
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Colors.black87,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text('Book'),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
+                              const SizedBox(height: 6),
+                              Container(
+                                height: 3,
+                                width: 26,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                            ),
-                            child: const Text('Book'),
+                            ],
                           ),
                         ],
                       ),
@@ -347,7 +365,7 @@ class _VendorPageState extends State<VendorPage> {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 28),
                       Divider(
                         height: 1,
                         thickness: 1,
@@ -619,6 +637,12 @@ class _VendorPageState extends State<VendorPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Menu',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 16),
           for (var i = 0; i < VendorPage.menuCategories.length; i++) ...[
             _buildMenuSection(context, VendorPage.menuCategories[i], i),
@@ -663,22 +687,46 @@ class _VendorPageState extends State<VendorPage> {
   }
 
   Widget _buildHeroImage(String? imageUrl) {
-    if (imageUrl != null) {
-      return Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
+    Widget buildBase() {
+      if (imageUrl != null) {
+        return Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+        );
+      }
+
+      return Container(
+        color: Colors.grey[300],
+        child: const Center(
+          child: Icon(
+            Icons.photo,
+            size: 80,
+            color: Colors.white70,
+          ),
+        ),
       );
     }
 
-    return Container(
-      color: Colors.grey[300],
-      child: const Center(
-        child: Icon(
-          Icons.photo,
-          size: 80,
-          color: Colors.white70,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned.fill(child: buildBase()),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.35),
+                  Colors.black.withValues(alpha: 0.12),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -705,18 +753,19 @@ class _VendorPageState extends State<VendorPage> {
 
   Widget _buildInfoRow(BuildContext context) {
     final theme = Theme.of(context);
-    final dividerColor = theme.dividerColor.withValues(alpha: 0.2);
+    final dividerColor = theme.dividerColor.withValues(alpha: 0.25);
+    const cardFill = Color(0xFFF9F9F9);
     final labelStyle = theme.textTheme.bodyMedium?.copyWith(
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-      fontWeight: FontWeight.w400,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.64),
+      fontWeight: FontWeight.w500,
       fontSize: 12,
     );
     final valueStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
     );
     final secondaryValueStyle = theme.textTheme.bodySmall?.copyWith(
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
-      fontWeight: FontWeight.w400,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+      fontWeight: FontWeight.w300,
       height: 1.2,
     );
 
@@ -746,77 +795,80 @@ class _VendorPageState extends State<VendorPage> {
       );
     }
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.zero,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: cardFill,
+        borderRadius: BorderRadius.circular(18),
       ),
-      child: Row(
-        children: [
-          buildCell(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Rating', style: labelStyle),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.star, color: Colors.amber[600], size: 18),
-                    const SizedBox(width: 6),
-                    Text('4.8', style: valueStyle),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text('500+ reviews', style: secondaryValueStyle),
-              ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: Row(
+          children: [
+            buildCell(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Rating', style: labelStyle),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: Colors.amber[600], size: 18),
+                      const SizedBox(width: 6),
+                      Text('4.8', style: valueStyle),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text('500+ reviews', style: secondaryValueStyle),
+                ],
+              ),
             ),
-          ),
-          buildCell(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 18,
-                  color: labelStyle?.color,
-                ),
-                const SizedBox(height: 6),
-                Text('Info & Contact', style: labelStyle),
-              ],
+            buildCell(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 18,
+                    color: labelStyle?.color,
+                  ),
+                  const SizedBox(height: 6),
+                  Text('Info & Contact', style: labelStyle),
+                ],
+              ),
+              onTap: () => _openVendorInfo(context),
             ),
-            onTap: () => _openVendorInfo(context),
-          ),
-          buildCell(
-            showDivider: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Distance', style: labelStyle),
-                const SizedBox(height: 6),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.directions_walk,
-                      size: 18,
-                      color: labelStyle?.color,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        '0.5 mi',
-                        style: valueStyle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+            buildCell(
+              showDivider: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Distance', style: labelStyle),
+                  const SizedBox(height: 6),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.directions_walk,
+                        size: 18,
+                        color: labelStyle?.color,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '0.5 mi',
+                          style: valueStyle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -830,17 +882,28 @@ class _VendorPageState extends State<VendorPage> {
     required _PhotoResource photo,
     required String heroTag,
   }) {
-    return GestureDetector(
-      onTap: () => _showPhotoLightbox(context, photo.url, heroTag),
-      child: Hero(
-        tag: heroTag,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Image.network(
-            photo.url,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+    return Hero(
+      tag: heroTag,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _showPhotoLightbox(context, photo.url, heroTag),
+          splashColor: Theme.of(context).colorScheme.primary.withValues(
+            alpha: 0.1,
+          ),
+          highlightColor: Colors.transparent,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Image.network(
+              photo.url,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
           ),
         ),
       ),
