@@ -46,6 +46,8 @@ class VendorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final media = MediaQuery.of(context);
+    final heroHeight = media.size.height * 0.5;
     final photoGroups = [
       for (var i = 0; i < _photoGallery.length; i += 3)
         _photoGallery.sublist(
@@ -55,241 +57,302 @@ class VendorPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(item.title),
-      ),
-      body: ListView(
-        padding: EdgeInsets.zero,
+      backgroundColor: theme.colorScheme.surface,
+      body: Stack(
         children: [
-          ClipRRect(
-            child: AspectRatio(
-              aspectRatio: 16 / 10,
-              child: item.image != null
-                  ? Image.network(item.image!, fit: BoxFit.cover)
-                  : Container(
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.photo,
-                        size: 80,
-                        color: Colors.white70,
-                      ),
+          ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              SizedBox(
+                height: heroHeight,
+                width: double.infinity,
+                child: _buildHeroImage(item.image),
+              ),
+              Transform.translate(
+                offset: const Offset(0, -24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(28),
                     ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.title,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 18,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          FilledButton(
+                            onPressed: () {},
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.black87,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            child: const Text('Book'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        item.subtitle,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Hours',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w400,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    FilledButton(
-                      onPressed: () {},
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.black87,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      child: const Text('Book'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  item.subtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Hours',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Column(
-                  children: [
-                    for (var i = 0; i < _weeklyHours.length; i++) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 6,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _weeklyHours[i].key,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w300,
+                      const SizedBox(height: 8),
+                      Column(
+                        children: [
+                          for (var i = 0; i < _weeklyHours.length; i++) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    _weeklyHours[i].key,
+                                    style:
+                                        theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                  Text(
+                                    _weeklyHours[i].value,
+                                    style:
+                                        theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Text(
-                              _weeklyHours[i].value,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w400,
+                            if (i != _weeklyHours.length - 1)
+                              Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: theme.dividerColor.withOpacity(0.2),
                               ),
-                            ),
                           ],
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Contact',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                      if (i != _weeklyHours.length - 1)
-                        Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: theme.dividerColor.withOpacity(0.2),
-                        ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Contact',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Column(
-                  children: [
-                    for (var i = 0; i < _contactDetails.length; i++) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 6,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _contactDetails[i].key,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w300,
+                      const SizedBox(height: 8),
+                      Column(
+                        children: [
+                          for (var i = 0; i < _contactDetails.length; i++) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                _contactDetails[i].value,
-                                textAlign: TextAlign.right,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (i != _contactDetails.length - 1)
-                        Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: theme.dividerColor.withOpacity(0.2),
-                        ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Photos',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('View All'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 240,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(right: 16),
-                    itemCount: photoGroups.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 16),
-                    itemBuilder: (context, groupIndex) {
-                      final group = photoGroups[groupIndex];
-                      if (group.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return SizedBox(
-                        width: 320,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: _buildPhotoTile(
-                                context,
-                                photo: group.first,
-                                heroTag: 'photo-${groupIndex * 3}',
-                              ),
-                            ),
-                            if (group.length > 1) ...[
-                              const SizedBox(width: 12),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: _buildPhotoTile(
-                                        context,
-                                        photo: group[1],
-                                        heroTag: 'photo-${groupIndex * 3 + 1}',
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _contactDetails[i].key,
+                                    style:
+                                        theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      _contactDetails[i].value,
+                                      textAlign: TextAlign.right,
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w400,
                                       ),
                                     ),
-                                    if (group.length > 2) ...[
-                                      const SizedBox(height: 12),
-                                      Expanded(
-                                        child: _buildPhotoTile(
-                                          context,
-                                          photo: group[2],
-                                          heroTag:
-                                              'photo-${groupIndex * 3 + 2}',
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
+                            if (i != _contactDetails.length - 1)
+                              Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: theme.dividerColor.withOpacity(0.2),
+                              ),
                           ],
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Photos',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('View All'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 240,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.only(right: 16),
+                          itemCount: photoGroups.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 16),
+                          itemBuilder: (context, groupIndex) {
+                            final group = photoGroups[groupIndex];
+                            if (group.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return SizedBox(
+                              width: 320,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: _buildPhotoTile(
+                                      context,
+                                      photo: group.first,
+                                      heroTag: 'photo-${groupIndex * 3}',
+                                    ),
+                                  ),
+                                  if (group.length > 1) ...[
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: _buildPhotoTile(
+                                              context,
+                                              photo: group[1],
+                                              heroTag:
+                                                  'photo-${groupIndex * 3 + 1}',
+                                            ),
+                                          ),
+                                          if (group.length > 2) ...[
+                                            const SizedBox(height: 12),
+                                            Expanded(
+                                              child: _buildPhotoTile(
+                                                context,
+                                                photo: group[2],
+                                                heroTag:
+                                                    'photo-${groupIndex * 3 + 2}',
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
+                      ),
+                      const SizedBox(height: 32),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-              ],
-            ),
+              ),
+              SizedBox(height: media.padding.bottom + 16),
+            ],
+          ),
+          Positioned(
+            top: media.padding.top + 16,
+            left: 16,
+            child: _buildFloatingBackButton(context),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHeroImage(String? imageUrl) {
+    if (imageUrl != null) {
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+      );
+    }
+
+    return Container(
+      color: Colors.grey[300],
+      child: const Center(
+        child: Icon(
+          Icons.photo,
+          size: 80,
+          color: Colors.white70,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingBackButton(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: IconButton(
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back),
+        color: Colors.black87,
       ),
     );
   }
@@ -316,7 +379,6 @@ class VendorPage extends StatelessWidget {
     );
   }
 
-  // todo : can't swipe across to see next photo on carosel
   void _showPhotoLightbox(
     BuildContext context,
     String imageUrl,
