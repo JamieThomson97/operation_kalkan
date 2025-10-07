@@ -15,10 +15,8 @@ class VendorPage extends StatelessWidget {
         title: Text(item.title),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
             child: AspectRatio(
               aspectRatio: 16 / 9,
               child: item.image != null

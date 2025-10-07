@@ -13,25 +13,20 @@ class CarouselCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const borderRadius = BorderRadius.all(Radius.circular(12));
+    const imageRadius = Radius.circular(8);
     final subtleTextColor = Colors.grey[600];
 
     return SizedBox(
       width: 200,
       child: Material(
         color: Colors.white,
-        borderRadius: borderRadius,
         child: InkWell(
-          borderRadius: borderRadius,
           onTap: onTap == null ? null : () => onTap!(item),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
+                borderRadius: const BorderRadius.all(imageRadius),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: item.image != null
@@ -50,7 +45,7 @@ class CarouselCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                padding: const EdgeInsets.fromLTRB(0, 9, 0, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
