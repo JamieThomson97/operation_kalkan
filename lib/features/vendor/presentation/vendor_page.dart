@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
+import 'package:operation_kalkan/features/vendor/presentation/vendor_info_page.dart';
 
 class VendorPage extends StatelessWidget {
   const VendorPage({required this.item, super.key});
 
   static const routeName = 'vendor';
-  static const _weeklyHours = <MapEntry<String, String>>[
-    MapEntry('Monday', '8 AM - 6 PM'),
-    MapEntry('Tuesday', '8 AM - 6 PM'),
-    MapEntry('Wednesday', '8 AM - 6 PM'),
-    MapEntry('Thursday', '8 AM - 6 PM'),
-    MapEntry('Friday', '8 AM - 6 PM'),
-    MapEntry('Saturday', '8 AM - 6 PM'),
-    MapEntry('Sunday', '8 AM - 6 PM'),
-  ];
-  static const _contactDetails = <MapEntry<String, String>>[
-    MapEntry('Phone', '(555) 123-4567'),
-    MapEntry('Address', '123 Market Street, Springfield'),
-    MapEntry('Website', 'www.thecozycorner.com'),
-    MapEntry('Email', 'hello@thecozycorner.com'),
-  ];
   static const _photoGallery = <_PhotoResource>[
     _PhotoResource(
       'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=1200&q=80',
@@ -122,99 +109,7 @@ class VendorPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      _buildInfoRow(theme),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Hours',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Column(
-                        children: [
-                          for (var i = 0; i < _weeklyHours.length; i++) ...[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 6,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    _weeklyHours[i].key,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                  ),
-                                  Text(
-                                    _weeklyHours[i].value,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (i != _weeklyHours.length - 1)
-                              Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: theme.dividerColor.withOpacity(0.2),
-                              ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Contact',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Column(
-                        children: [
-                          for (var i = 0; i < _contactDetails.length; i++) ...[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 6,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _contactDetails[i].key,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      _contactDetails[i].value,
-                                      textAlign: TextAlign.right,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (i != _contactDetails.length - 1)
-                              Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: theme.dividerColor.withOpacity(0.2),
-                              ),
-                          ],
-                        ],
-                      ),
+                      _buildInfoRow(context),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -353,7 +248,8 @@ class VendorPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(ThemeData theme) {
+  Widget _buildInfoRow(BuildContext context) {
+    final theme = Theme.of(context);
     final dividerColor = theme.dividerColor.withOpacity(0.2);
     final labelStyle = theme.textTheme.bodyMedium?.copyWith(
       color: theme.colorScheme.onSurface.withOpacity(0.7),
@@ -372,18 +268,25 @@ class VendorPage extends StatelessWidget {
     Widget buildCell({
       required Widget child,
       bool showDivider = true,
+      VoidCallback? onTap,
     }) {
-      return Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            border: Border(
-              right: showDivider
-                  ? BorderSide(color: dividerColor, width: 0.8)
-                  : BorderSide.none,
-            ),
+      final cell = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            right: showDivider
+                ? BorderSide(color: dividerColor, width: 0.8)
+                : BorderSide.none,
           ),
-          child: child,
+        ),
+        child: child,
+      );
+
+      return Expanded(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: cell,
         ),
       );
     }
@@ -424,9 +327,10 @@ class VendorPage extends StatelessWidget {
                   color: labelStyle?.color,
                 ),
                 const SizedBox(height: 6),
-                Text('Info and Contact', style: labelStyle),
+                Text('Info & Contact', style: labelStyle),
               ],
             ),
+            onTap: () => _openVendorInfo(context),
           ),
           buildCell(
             showDivider: false,
@@ -460,6 +364,10 @@ class VendorPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _openVendorInfo(BuildContext context) {
+    context.pushNamed(VendorInfoPage.routeName, extra: item);
   }
 
   Widget _buildPhotoTile(

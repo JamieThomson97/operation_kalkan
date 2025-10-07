@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:operation_kalkan/features/homepage/presentation/homepage.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
 import 'package:operation_kalkan/features/vendor/presentation/vendor_page.dart';
+import 'package:operation_kalkan/features/vendor/presentation/vendor_info_page.dart';
 
 final goRouterProvider = Provider<GoRouter>(
   (ref) => GoRouter(
@@ -23,6 +24,18 @@ final goRouterProvider = Provider<GoRouter>(
           }
 
           return VendorPage(item: extra);
+        },
+      ),
+      GoRoute(
+        path: '/vendor/info',
+        name: VendorInfoPage.routeName,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! CardItem) {
+            return const _MissingVendorView();
+          }
+
+          return VendorInfoPage(item: extra);
         },
       ),
     ],
