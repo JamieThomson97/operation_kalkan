@@ -38,7 +38,7 @@ class VendorPage extends StatefulWidget {
           price: '£8.50',
           tag: 'Popular',
           imageUrl:
-              'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=800&q=80',
         ),
         _MenuItem(
           name: 'Truffle Arancini',
@@ -46,7 +46,7 @@ class VendorPage extends StatefulWidget {
               'Crispy risotto balls filled with smoked mozzarella and truffle aioli.',
           price: '£7.20',
           imageUrl:
-              'https://images.unsplash.com/photo-1481931098730-318b6f776db0?auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=800&q=80',
         ),
         _MenuItem(
           name: 'Seasonal Soup',
@@ -74,7 +74,7 @@ class VendorPage extends StatefulWidget {
           price: '£21.00',
           tag: 'Chef\'s special',
           imageUrl:
-              'https://images.unsplash.com/photo-1555992336-cbf3cf81eb8b?auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
         ),
         _MenuItem(
           name: 'Wild Mushroom Risotto',
@@ -93,7 +93,7 @@ class VendorPage extends StatefulWidget {
               'Bright lemon curd in a buttery crust with vanilla bean cream.',
           price: '£6.50',
           imageUrl:
-              'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=800&q=80',
         ),
         _MenuItem(
           name: 'Chocolate Fondant',
