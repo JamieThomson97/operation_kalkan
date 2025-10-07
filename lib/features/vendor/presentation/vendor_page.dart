@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
 import 'package:operation_kalkan/features/vendor/presentation/vendor_info_page.dart';
 
-class VendorPage extends StatelessWidget {
+class VendorPage extends StatefulWidget {
   const VendorPage({required this.item, super.key});
 
   static const routeName = 'vendor';
@@ -31,15 +31,49 @@ class VendorPage extends StatelessWidget {
   final CardItem item;
 
   @override
+  State<VendorPage> createState() => _VendorPageState();
+}
+
+class _VendorPageState extends State<VendorPage> {
+  static const _collapsedThreshold = 160.0;
+
+  late final ScrollController _scrollController;
+  bool _showCollapsedBar = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_handleScroll);
+  }
+
+  void _handleScroll() {
+    final shouldShow = _scrollController.offset >= _collapsedThreshold;
+    if (shouldShow != _showCollapsedBar) {
+      setState(() => _showCollapsedBar = shouldShow);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_handleScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final media = MediaQuery.of(context);
     final heroHeight = media.size.height * 0.35;
     final photoGroups = [
-      for (var i = 0; i < _photoGallery.length; i += 3)
-        _photoGallery.sublist(
+      for (var i = 0; i < VendorPage._photoGallery.length; i += 3)
+        VendorPage._photoGallery.sublist(
           i,
-          i + 3 > _photoGallery.length ? _photoGallery.length : i + 3,
+          i + 3 > VendorPage._photoGallery.length
+              ? VendorPage._photoGallery.length
+              : i + 3,
         ),
     ];
 
@@ -48,12 +82,13 @@ class VendorPage extends StatelessWidget {
       body: Stack(
         children: [
           ListView(
+            controller: _scrollController,
             padding: EdgeInsets.zero,
             children: [
               SizedBox(
                 height: heroHeight,
                 width: double.infinity,
-                child: _buildHeroImage(item.image),
+                child: _buildHeroImage(widget.item.image),
               ),
               Transform.translate(
                 offset: const Offset(0, -24),
@@ -76,7 +111,7 @@ class VendorPage extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              item.title,
+                              widget.item.title,
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -103,12 +138,13 @@ class VendorPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        item.subtitle,
+                        widget.item.subtitle,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 20),
+
                       _buildInfoRow(context),
                       const SizedBox(height: 24),
                       Row(
@@ -198,11 +234,86 @@ class VendorPage extends StatelessWidget {
             ],
           ),
           Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: _buildCollapsedAppBar(context),
+          ),
+          Positioned(
             top: media.padding.top + 16,
             left: 16,
-            child: _buildFloatingBackButton(context),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 180),
+              opacity: _showCollapsedBar ? 0 : 1,
+              child: IgnorePointer(
+                ignoring: _showCollapsedBar,
+                child: _buildFloatingBackButton(context),
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCollapsedAppBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final media = MediaQuery.of(context);
+    final shadows = _showCollapsedBar
+        ? [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ]
+        : const <BoxShadow>[];
+
+    return IgnorePointer(
+      ignoring: !_showCollapsedBar,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _showCollapsedBar ? 1 : 0,
+        child: Container(
+          padding: EdgeInsets.only(top: media.padding.top),
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            boxShadow: shadows,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: SizedBox(
+              height: kToolbarHeight,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.item.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.favorite_border),
+                    tooltip: 'Save',
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.share_outlined),
+                    tooltip: 'Share',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -367,7 +478,7 @@ class VendorPage extends StatelessWidget {
   }
 
   void _openVendorInfo(BuildContext context) {
-    context.pushNamed(VendorInfoPage.routeName, extra: item);
+    context.pushNamed(VendorInfoPage.routeName, extra: widget.item);
   }
 
   Widget _buildPhotoTile(
