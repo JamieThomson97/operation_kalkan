@@ -14,6 +14,12 @@ class VendorPage extends StatelessWidget {
     MapEntry('Saturday', '8 AM - 6 PM'),
     MapEntry('Sunday', '8 AM - 6 PM'),
   ];
+  static const _contactDetails = <MapEntry<String, String>>[
+    MapEntry('Phone', '(555) 123-4567'),
+    MapEntry('Address', '123 Market Street, Springfield'),
+    MapEntry('Website', 'www.thecozycorner.com'),
+    MapEntry('Email', 'hello@thecozycorner.com'),
+  ];
 
   final CardItem item;
 
@@ -119,6 +125,53 @@ class VendorPage extends StatelessWidget {
                         ),
                       ),
                       if (i != _weeklyHours.length - 1)
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: theme.dividerColor.withOpacity(0.2),
+                        ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Contact',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Column(
+                  children: [
+                    for (var i = 0; i < _contactDetails.length; i++) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _contactDetails[i].key,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                _contactDetails[i].value,
+                                textAlign: TextAlign.right,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (i != _contactDetails.length - 1)
                         Divider(
                           height: 1,
                           thickness: 1,
