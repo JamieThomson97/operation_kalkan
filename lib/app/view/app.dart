@@ -9,7 +9,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
-    const surfaceBackground = Color(0xFFF4F5F7);
+    const surfaceBackground = Colors.white;
     final colorScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF3D5AFE),
     );
