@@ -62,6 +62,26 @@ class Homepage extends StatelessWidget {
                 extra: item,
               ),
             ),
+            const SizedBox(height: 32),
+            const SectionTitle(title: 'Bars'),
+            const SizedBox(height: 12),
+            HorizontalCarousel(
+              items: _sampleBars,
+              onItemTap: (item) => context.pushNamed(
+                VendorPage.routeName,
+                extra: item,
+              ),
+            ),
+            const SizedBox(height: 32),
+            const SectionTitle(title: 'Excursions'),
+            const SizedBox(height: 12),
+            HorizontalCarousel(
+              items: _sampleExcursions,
+              onItemTap: (item) => context.pushNamed(
+                VendorPage.routeName,
+                extra: item,
+              ),
+            ),
           ],
         ),
       ),
@@ -105,7 +125,7 @@ final List<CardItem> _sampleActivities = [
     title: 'Boat Trip',
     subtitle: 'Full-day island hopping escape',
     image:
-        'https://images.unsplash.com/photo-1666222148600-1987996fb678?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        'https://images.unsplash.com/photo-1666222148600-1987996fb678'
         '?auto=format&fit=crop&w=1200&q=80',
   ),
   const CardItem(
@@ -113,6 +133,54 @@ final List<CardItem> _sampleActivities = [
     subtitle: 'Scenic mountain walk at sunrise',
     image:
         'https://images.unsplash.com/photo-1469474968028-56623f02e42e'
+        '?auto=format&fit=crop&w=1200&q=80',
+  ),
+];
+
+final List<CardItem> _sampleBars = [
+  const CardItem(
+    title: 'Skyline Lounge',
+    subtitle: 'Craft cocktails with panoramic views',
+    image:
+        'https://images.unsplash.com/photo-1481833761820-0509d3217039'
+        '?auto=format&fit=crop&w=1200&q=80',
+  ),
+  const CardItem(
+    title: 'Sunset Terrace',
+    subtitle: 'Chill beats, tapas, and golden hour vibes',
+    image:
+        'https://images.unsplash.com/photo-1574043977420-798dc003fe5e'
+        '?auto=format&fit=crop&w=1200&q=80',
+  ),
+  const CardItem(
+    title: 'The Gin Parlour',
+    subtitle: 'Botanical infusions & mixology workshops',
+    image:
+        'https://images.unsplash.com/photo-1544145945-f90425340c7e'
+        '?auto=format&fit=crop&w=1200&q=80',
+  ),
+];
+
+final List<CardItem> _sampleExcursions = [
+  const CardItem(
+    title: 'Canyon Safari',
+    subtitle: 'Off-road adventure through hidden valleys',
+    image:
+        'https://images.unsplash.com/photo-1521295121783-8a321d551ad2'
+        '?auto=format&fit=crop&w=1200&q=80',
+  ),
+  const CardItem(
+    title: 'Historical Walking Tour',
+    subtitle: 'Guided stroll through ancient ruins',
+    image:
+        'https://images.unsplash.com/photo-1523881374239-482c55195b63'
+        '?auto=format&fit=crop&w=1200&q=80',
+  ),
+  const CardItem(
+    title: 'Sunrise Hot Air Balloon',
+    subtitle: 'Soar above the coastline at dawn',
+    image:
+        'https://images.unsplash.com/photo-1501107498-222d78ef7fba'
         '?auto=format&fit=crop&w=1200&q=80',
   ),
 ];
