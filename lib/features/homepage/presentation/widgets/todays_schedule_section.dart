@@ -14,15 +14,14 @@ class TodaysScheduleSection extends StatelessWidget {
         color: scheduleCardColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "Today's Schedule",
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.2,
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 12),
@@ -60,7 +59,7 @@ class _ScheduleRow extends StatelessWidget {
       children: [
         Text(
           entry.detail,
-          style: textTheme.bodyLarge?.copyWith(
+          style: textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
