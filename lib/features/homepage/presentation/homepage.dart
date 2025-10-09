@@ -125,7 +125,7 @@ final List<CardItem> _sampleActivities = [
     title: 'Boat Trip',
     subtitle: 'Full-day island hopping escape',
     image:
-        'https://images.unsplash.com/photo-1666222148600-1987996fb678'
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
         '?auto=format&fit=crop&w=1200&q=80',
   ),
   const CardItem(
