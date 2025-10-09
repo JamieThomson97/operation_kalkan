@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
+import 'package:operation_kalkan/features/vendor/presentation/vendor_page.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class RecommendedForYouSection extends StatelessWidget {
@@ -10,6 +14,14 @@ class RecommendedForYouSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final highlightColor = theme.colorScheme.primary;
+    void onVendorTap(_RecommendedVendor vendor) {
+      unawaited(
+        context.pushNamed(
+          VendorPage.routeName,
+          extra: vendor.card,
+        ),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,6 +52,7 @@ class RecommendedForYouSection extends StatelessWidget {
               priorityHeight: priorityHeight,
               rowSpacing: rowSpacing,
               highlightColor: highlightColor,
+              onVendorTap: onVendorTap,
             );
 
             return SizedBox(
@@ -66,6 +79,7 @@ class RecommendedForYouSection extends StatelessWidget {
     required double priorityHeight,
     required double rowSpacing,
     required Color highlightColor,
+    required ValueChanged<_RecommendedVendor> onVendorTap,
   }) {
     final columns = <Widget>[];
     var index = 0;
@@ -79,6 +93,7 @@ class RecommendedForYouSection extends StatelessWidget {
             highlightColor: highlightColor,
             width: priorityWidth,
             height: priorityHeight,
+            onTap: () => onVendorTap(vendor),
           ),
         );
         index += 1;
@@ -93,6 +108,7 @@ class RecommendedForYouSection extends StatelessWidget {
         index += 1;
       }
 
+      final partnerVendor = nextVendor;
       columns.add(
         SizedBox(
           width: standardWidth,
@@ -105,14 +121,16 @@ class RecommendedForYouSection extends StatelessWidget {
                 highlightColor: highlightColor,
                 width: standardWidth,
                 height: standardHeight,
+                onTap: () => onVendorTap(vendor),
               ),
               SizedBox(height: rowSpacing),
-              if (nextVendor != null)
+              if (partnerVendor != null)
                 _RecommendedVendorTile(
-                  vendor: nextVendor,
+                  vendor: partnerVendor,
                   highlightColor: highlightColor,
                   width: standardWidth,
                   height: standardHeight,
+                  onTap: () => onVendorTap(partnerVendor),
                 )
               else
                 SizedBox(
@@ -142,14 +160,15 @@ class RecommendedForYouSection extends StatelessWidget {
 
 class _RecommendedVendor {
   const _RecommendedVendor({
-    required this.title,
-    required this.imageUrl,
+    required this.card,
     this.isPriority = false,
   });
 
-  final String title;
-  final String imageUrl;
+  final CardItem card;
   final bool isPriority;
+
+  String get title => card.title;
+  String? get imageUrl => card.image;
 }
 
 class _RecommendedVendorTile extends StatelessWidget {
@@ -158,12 +177,14 @@ class _RecommendedVendorTile extends StatelessWidget {
     required this.highlightColor,
     required this.width,
     required this.height,
+    required this.onTap,
   });
 
   final _RecommendedVendor vendor;
   final Color highlightColor;
   final double width;
   final double height;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -172,60 +193,65 @@ class _RecommendedVendorTile extends StatelessWidget {
     return SizedBox(
       width: width,
       height: height,
-      child: ClipRRect(
+      child: Material(
+        color: Colors.transparent,
         borderRadius: borderRadius,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                ),
-                child: SafeNetworkImage(
-                  imageUrl: vendor.imageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.05),
-                      Colors.black.withValues(alpha: 0.8),
-                    ],
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                  ),
+                  child: SafeNetworkImage(
+                    imageUrl: vendor.imageUrl,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
-              child: Text(
-                vendor.title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: vendor.isPriority
-                        ? highlightColor.withValues(alpha: 0.35)
-                        : Colors.transparent,
-                    width: vendor.isPriority ? 2 : 0,
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.05),
+                        Colors.black.withValues(alpha: 0.8),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 16,
+                child: Text(
+                  vendor.title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: vendor.isPriority
+                          ? highlightColor.withValues(alpha: 0.35)
+                          : Colors.transparent,
+                      width: vendor.isPriority ? 2 : 0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -234,30 +260,45 @@ class _RecommendedVendorTile extends StatelessWidget {
 
 const _recommendedVendors = [
   _RecommendedVendor(
-    title: 'Skyline Lounge',
-    imageUrl:
-        'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=80',
+    card: CardItem(
+      title: 'Skyline Lounge',
+      subtitle: 'Craft cocktails with panoramic views',
+      image:
+          'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=80',
+    ),
     isPriority: true,
   ),
   _RecommendedVendor(
-    title: 'Sunset Terrace',
-    imageUrl:
-        'https://images.unsplash.com/photo-1470246973918-29a93221c455?auto=format&fit=crop&w=1200&q=80',
+    card: CardItem(
+      title: 'Sunset Terrace',
+      subtitle: 'Tapas plates and relaxed terrace beats',
+      image:
+          'https://images.unsplash.com/photo-1470246973918-29a93221c455?auto=format&fit=crop&w=1200&q=80',
+    ),
   ),
   _RecommendedVendor(
-    title: 'Canyon Safari Guides',
-    imageUrl:
-        'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80',
+    card: CardItem(
+      title: 'Canyon Safari Guides',
+      subtitle: 'Guided off-road adventures',
+      image:
+          'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80',
+    ),
   ),
   _RecommendedVendor(
-    title: 'The Gin Parlour',
-    imageUrl:
-        'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80',
+    card: CardItem(
+      title: 'The Gin Parlour',
+      subtitle: 'Botanical infusions & masterclasses',
+      image:
+          'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80',
+    ),
     isPriority: true,
   ),
   _RecommendedVendor(
-    title: 'La Managa Spa',
-    imageUrl:
-        'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1200&q=80',
+    card: CardItem(
+      title: 'La Managa Spa',
+      subtitle: 'Restful therapies & steam rituals',
+      image:
+          'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1200&q=80',
+    ),
   ),
 ];
