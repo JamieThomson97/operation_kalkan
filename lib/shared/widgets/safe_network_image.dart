@@ -48,7 +48,7 @@ class SafeNetworkImage extends StatelessWidget {
         width: width,
         height: height,
         alignment: alignment,
-        errorBuilder: (_, __, ___) => buildPlaceholder(),
+        errorBuilder: (context, error, stackTrace) => buildPlaceholder(),
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
             return child;

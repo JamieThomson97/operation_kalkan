@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:operation_kalkan/features/homepage/presentation/homepage.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
-import 'package:operation_kalkan/features/vendor/presentation/vendor_page.dart';
 import 'package:operation_kalkan/features/vendor/presentation/vendor_info_page.dart';
+import 'package:operation_kalkan/features/vendor/presentation/vendor_page.dart';
 
 final goRouterProvider = Provider<GoRouter>(
   (ref) => GoRouter(
