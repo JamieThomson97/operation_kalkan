@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/vendor/data/vendor_static_content.dart';
+import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 typedef VendorPhotoTapCallback =
     void Function(
@@ -118,8 +119,8 @@ class VendorPhotoTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
             ),
-            child: Image.network(
-              photo.url,
+            child: SafeNetworkImage(
+              imageUrl: photo.url,
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,

@@ -149,7 +149,7 @@ final List<CardItem> _sampleBars = [
     title: 'Sunset Terrace',
     subtitle: 'Chill beats, tapas, and golden hour vibes',
     image:
-        'https://images.unsplash.com/photo-1574043977420-798dc003fe5e'
+        'https://images.unsplash.com/photo-1470246973918-29a93221c455'
         '?auto=format&fit=crop&w=1200&q=80',
   ),
   const CardItem(
@@ -173,14 +173,14 @@ final List<CardItem> _sampleExcursions = [
     title: 'Historical Walking Tour',
     subtitle: 'Guided stroll through ancient ruins',
     image:
-        'https://images.unsplash.com/photo-1523881374239-482c55195b63'
+        'https://images.unsplash.com/photo-1470337458703-46ad1756a187'
         '?auto=format&fit=crop&w=1200&q=80',
   ),
   const CardItem(
     title: 'Sunrise Hot Air Balloon',
     subtitle: 'Soar above the coastline at dawn',
     image:
-        'https://images.unsplash.com/photo-1501107498-222d78ef7fba'
+        'https://images.unsplash.com/photo-1501785888041-af3ef285b470'
         '?auto=format&fit=crop&w=1200&q=80',
   ),
 ];

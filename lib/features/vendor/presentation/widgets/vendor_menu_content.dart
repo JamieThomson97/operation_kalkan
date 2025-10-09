@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/vendor/data/vendor_static_content.dart';
+import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class VendorMenuContent extends StatelessWidget {
   const VendorMenuContent({
@@ -145,8 +146,8 @@ class VendorMenuItemTile extends StatelessWidget {
               const SizedBox(width: 16),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  item.imageUrl!,
+                child: SafeNetworkImage(
+                  imageUrl: item.imageUrl,
                   width: 76,
                   height: 76,
                   fit: BoxFit.cover,

@@ -12,6 +12,7 @@ import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_inf
 import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_menu_content.dart';
 import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_menu_tabs.dart';
 import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_photo_gallery.dart';
+import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class VendorPage extends StatefulWidget {
   const VendorPage({required this.item, super.key});
@@ -373,8 +374,8 @@ class _VendorPageState extends State<VendorPage> {
                       child: InteractiveViewer(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            imageUrl,
+                          child: SafeNetworkImage(
+                            imageUrl: imageUrl,
                             fit: BoxFit.contain,
                           ),
                         ),

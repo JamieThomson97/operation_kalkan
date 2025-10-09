@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
+import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class CarouselCard extends StatelessWidget {
   const CarouselCard({
@@ -29,19 +30,18 @@ class CarouselCard extends StatelessWidget {
                 borderRadius: const BorderRadius.all(imageRadius),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: item.image != null
-                      ? Image.network(
-                          item.image!,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          color: Colors.grey[300],
-                          child: const Icon(
-                            Icons.photo,
-                            size: 64,
-                            color: Colors.white70,
-                          ),
-                        ),
+                  child: SafeNetworkImage(
+                    imageUrl: item.image,
+                    fit: BoxFit.cover,
+                    placeholder: Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.photo,
+                        size: 64,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Padding(

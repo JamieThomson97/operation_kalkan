@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class VendorHeroImage extends StatelessWidget {
   const VendorHeroImage({
@@ -10,14 +11,7 @@ class VendorHeroImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildBase() {
-      if (imageUrl != null) {
-        return Image.network(
-          imageUrl!,
-          fit: BoxFit.cover,
-        );
-      }
-
+    Widget buildPlaceholder() {
       return Container(
         color: Colors.grey[300],
         child: const Center(
@@ -33,7 +27,13 @@ class VendorHeroImage extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Positioned.fill(child: buildBase()),
+        Positioned.fill(
+          child: SafeNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+            placeholder: buildPlaceholder(),
+          ),
+        ),
         Positioned.fill(
           child: DecoratedBox(
             decoration: BoxDecoration(
