@@ -56,7 +56,7 @@ class SafeNetworkImage extends StatelessWidget {
           return buildPlaceholder();
         },
       );
-    } catch (_) {
+    } on Object {
       return buildPlaceholder();
     }
   }
