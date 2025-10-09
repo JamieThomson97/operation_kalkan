@@ -8,14 +8,15 @@ class RecommendedForYouSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final highlightColor = Theme.of(context).colorScheme.primary;
+    final theme = Theme.of(context);
+    final highlightColor = theme.colorScheme.primary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Recommended for you',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -23,35 +24,119 @@ class RecommendedForYouSection extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final availableWidth = constraints.maxWidth;
-            const double priorityMinWidth = 150;
+            const double priorityMinWidth = 180;
             const double standardMinWidth = 130;
-            final priorityWidth = max(priorityMinWidth, availableWidth * 0.48);
-            final standardWidth = max(standardMinWidth, availableWidth * 0.38);
+            const double rowSpacing = 12;
+            final standardWidth = max(standardMinWidth, availableWidth * 0.34);
+            final standardHeight = standardWidth;
+            final priorityWidth = max(priorityMinWidth, availableWidth * 0.46);
+            final priorityHeight = standardHeight * 2 + rowSpacing;
+
+            final columns = _buildVendorColumns(
+              vendors: _recommendedVendors,
+              standardWidth: standardWidth,
+              standardHeight: standardHeight,
+              priorityWidth: priorityWidth,
+              priorityHeight: priorityHeight,
+              rowSpacing: rowSpacing,
+              highlightColor: highlightColor,
+            );
 
             return SizedBox(
-              height: 210,
+              height: priorityHeight,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final vendor = _recommendedVendors[index];
-                  final tileWidth = vendor.isPriority
-                      ? priorityWidth
-                      : standardWidth;
-                  return _RecommendedVendorTile(
-                    vendor: vendor,
-                    highlightColor: highlightColor,
-                    width: tileWidth,
-                  );
-                },
+                itemBuilder: (context, index) => columns[index],
                 separatorBuilder: (context, _) => const SizedBox(width: 16),
-                itemCount: _recommendedVendors.length,
+                itemCount: columns.length,
               ),
             );
           },
         ),
       ],
     );
+  }
+
+  List<Widget> _buildVendorColumns({
+    required List<_RecommendedVendor> vendors,
+    required double standardWidth,
+    required double standardHeight,
+    required double priorityWidth,
+    required double priorityHeight,
+    required double rowSpacing,
+    required Color highlightColor,
+  }) {
+    final columns = <Widget>[];
+    var index = 0;
+
+    while (index < vendors.length) {
+      final vendor = vendors[index];
+      if (vendor.isPriority) {
+        columns.add(
+          _RecommendedVendorTile(
+            vendor: vendor,
+            highlightColor: highlightColor,
+            width: priorityWidth,
+            height: priorityHeight,
+          ),
+        );
+        index += 1;
+        continue;
+      }
+
+      _RecommendedVendor? nextVendor;
+      if (index + 1 < vendors.length && !vendors[index + 1].isPriority) {
+        nextVendor = vendors[index + 1];
+        index += 2;
+      } else {
+        index += 1;
+      }
+
+      columns.add(
+        SizedBox(
+          width: standardWidth,
+          height: priorityHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _RecommendedVendorTile(
+                vendor: vendor,
+                highlightColor: highlightColor,
+                width: standardWidth,
+                height: standardHeight,
+              ),
+              SizedBox(height: rowSpacing),
+              if (nextVendor != null)
+                _RecommendedVendorTile(
+                  vendor: nextVendor,
+                  highlightColor: highlightColor,
+                  width: standardWidth,
+                  height: standardHeight,
+                )
+              else
+                SizedBox(
+                  height: standardHeight,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      color: Colors.grey[100],
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.more_horiz,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return columns;
   }
 }
 
@@ -72,11 +157,13 @@ class _RecommendedVendorTile extends StatelessWidget {
     required this.vendor,
     required this.highlightColor,
     required this.width,
+    required this.height,
   });
 
   final _RecommendedVendor vendor;
   final Color highlightColor;
   final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +171,7 @@ class _RecommendedVendorTile extends StatelessWidget {
 
     return SizedBox(
       width: width,
+      height: height,
       child: ClipRRect(
         borderRadius: borderRadius,
         child: Stack(
@@ -107,7 +195,7 @@ class _RecommendedVendorTile extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.black.withValues(alpha: 0.05),
-                      Colors.black.withValues(alpha: 0.75),
+                      Colors.black.withValues(alpha: 0.8),
                     ],
                   ),
                 ),
@@ -117,46 +205,12 @@ class _RecommendedVendorTile extends StatelessWidget {
               left: 16,
               right: 16,
               bottom: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (vendor.isPriority)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: highlightColor.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: [
-                          BoxShadow(
-                            color: highlightColor.withValues(alpha: 0.3),
-                            blurRadius: 14,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: const Text(
-                        'Featured',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                          letterSpacing: 0.4,
-                        ),
-                      ),
-                    ),
-                  if (vendor.isPriority) const SizedBox(height: 8),
-                  Text(
-                    vendor.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              child: Text(
+                vendor.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             Positioned.fill(
@@ -200,5 +254,10 @@ const _recommendedVendors = [
     imageUrl:
         'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80',
     isPriority: true,
+  ),
+  _RecommendedVendor(
+    title: 'La Managa Spa',
+    imageUrl:
+        'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1200&q=80',
   ),
 ];
