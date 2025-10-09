@@ -11,6 +11,7 @@ class Homepage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F6F1),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(24),
