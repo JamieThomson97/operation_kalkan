@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
@@ -47,7 +48,7 @@ class RecommendedForYouSection extends StatelessWidget {
                 onPressed: onSeeAll,
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
-                  minimumSize: const Size(0, 0),
+                  minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   foregroundColor: highlightColor,
                 ),
@@ -68,9 +69,26 @@ class RecommendedForYouSection extends StatelessWidget {
             final maxWidth = constraints.maxWidth;
             final baseWidth = maxWidth.isFinite ? maxWidth : 280.0;
             final desiredWidth = baseWidth * 0.85;
-            final cardWidth = desiredWidth.clamp(250.0, 320.0).toDouble();
+            final cardWidth = desiredWidth < 250.0
+                ? 250.0
+                : (desiredWidth > 320.0 ? 320.0 : desiredWidth);
+            final estimatedHeights = _recommendedVendors
+                .map(
+                  (vendor) => _RecommendedVendorCard.estimatedHeightFor(
+                    context: context,
+                    vendor: vendor,
+                    width: cardWidth,
+                  ),
+                )
+                .toList();
+            final baseHeight = estimatedHeights.isEmpty
+                ? 0.0
+                : estimatedHeights.reduce(
+                    (a, b) => a > b ? a : b,
+                  );
+            final cardHeight = baseHeight.ceilToDouble() + 24;
             return SizedBox(
-              height: 420,
+              height: cardHeight,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
@@ -140,8 +158,8 @@ class _RecommendedVendorCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
-    final borderRadius = BorderRadius.circular(24);
-    final shadowColor = colorScheme.shadow.withOpacity(0.08);
+    final borderRadius = BorderRadius.circular(16);
+    final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
 
     return SizedBox(
       width: width,
@@ -170,7 +188,7 @@ class _RecommendedVendorCard extends StatelessWidget {
                   borderRadius: borderRadius,
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -181,7 +199,7 @@ class _RecommendedVendorCard extends StatelessWidget {
                         highlightColor: highlightColor,
                         isPriority: vendor.isPriority,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Text(
                         vendor.title,
                         style: textTheme.titleMedium?.copyWith(
@@ -189,6 +207,8 @@ class _RecommendedVendorCard extends StatelessWidget {
                           color: colorScheme.onSurface,
                           letterSpacing: -0.1,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -196,22 +216,24 @@ class _RecommendedVendorCard extends StatelessWidget {
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _VendorMetadataRow(
                         colorScheme: colorScheme,
                         vendor: vendor,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 8),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           FilledButton.icon(
                             onPressed: onTap,
                             style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
-                              ),
+                              minimumSize: const Size(0, 36),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -219,9 +241,14 @@ class _RecommendedVendorCard extends StatelessWidget {
                             icon: const Icon(Icons.event_available_outlined),
                             label: Text(vendor.primaryActionLabel),
                           ),
-                          const Spacer(),
                           TextButton(
                             onPressed: onTap,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              minimumSize: const Size(0, 36),
+                            ),
                             child: Text(
                               vendor.secondaryActionLabel,
                               style: textTheme.bodyMedium?.copyWith(
@@ -240,6 +267,75 @@ class _RecommendedVendorCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static double estimatedHeightFor({
+    required BuildContext context,
+    required _RecommendedVendor vendor,
+    required double width,
+  }) {
+    const double imageHeight = 160;
+    const double paddingTop = 12;
+    const double paddingBottom = 10;
+    const double spacingAfterTag = 8;
+    const double spacingAfterTitle = 8;
+    const double spacingAfterSubtitle = 8;
+    const double spacingBeforeActions = 8;
+    const double buttonHeight = 40;
+    const double horizontalPadding = 20;
+    final textWidth = width - horizontalPadding * 2;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    final tagStyle = textTheme.labelMedium;
+    final tagTextHeight = _measureTextHeight(
+      vendor.tag,
+      tagStyle,
+      textWidth,
+      maxLines: 1,
+    );
+    final tagHeight = tagTextHeight + 12; // vertical padding inside chip
+
+    final titleStyle = textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    );
+    final titleHeight = _measureTextHeight(
+      vendor.title,
+      titleStyle,
+      textWidth,
+    );
+
+    final subtitleStyle = textTheme.bodyMedium;
+    final subtitleHeight = _measureTextHeight(
+      vendor.subtitle,
+      subtitleStyle,
+      textWidth,
+    );
+
+    final metadataStyle = textTheme.bodyMedium;
+    final metadataHeight = math.max(
+      _measureTextHeight(
+        vendor.distanceLabel,
+        metadataStyle,
+        textWidth,
+        maxLines: 1,
+      ),
+      20,
+    );
+
+    return imageHeight +
+        paddingTop +
+        paddingBottom +
+        spacingAfterTag +
+        spacingAfterTitle +
+        spacingAfterSubtitle +
+        spacingBeforeActions +
+        buttonHeight +
+        tagHeight +
+        titleHeight +
+        subtitleHeight +
+        metadataHeight;
   }
 }
 
@@ -432,3 +528,21 @@ const _recommendedVendors = [
     secondaryActionLabel: 'Details',
   ),
 ];
+
+double _measureTextHeight(
+  String text,
+  TextStyle? style,
+  double maxWidth, {
+  int maxLines = 2,
+}) {
+  if (text.isEmpty) {
+    return 0;
+  }
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    maxLines: maxLines,
+    ellipsis: '…',
+    textDirection: TextDirection.ltr,
+  )..layout(maxWidth: maxWidth);
+  return painter.height;
+}
