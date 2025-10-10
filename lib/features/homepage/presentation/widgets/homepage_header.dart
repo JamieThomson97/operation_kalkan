@@ -12,10 +12,9 @@ class HomepageHeader extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return ClipRRect(
-          borderRadius: BorderRadius.circular(32),
           child: SizedBox(
             width: constraints.maxWidth,
-            height: 220,
+            height: 200,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -27,7 +26,7 @@ class HomepageHeader extends StatelessWidget {
                 ),
                 Positioned.fill(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                    filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                     child: const SizedBox(),
                   ),
                 ),
@@ -48,14 +47,14 @@ class HomepageHeader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
-                    vertical: 28,
+                    vertical: 20,
                   ),
                   child: Align(
                     alignment: Alignment.bottomLeft,
                     child: Text(
                       'Welcome back',
                       style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         color: Colors.black87,
                         letterSpacing: -0.1,
                       ),

@@ -13,23 +13,32 @@ class Homepage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F6F1),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: const [
-            HomepageHeader(),
-            SizedBox(height: 24),
-            RecommendedForYouSection(),
-            SizedBox(height: 24),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: TodaysScheduleSection()),
-                SizedBox(width: 16),
-                Expanded(child: UpcomingEventsSection()),
-              ],
+          padding: EdgeInsets.zero,
+          children: [
+            const HomepageHeader(),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: const [
+                  RecommendedForYouSection(),
+                  SizedBox(height: 24),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: TodaysScheduleSection()),
+                      SizedBox(width: 16),
+                      Expanded(child: UpcomingEventsSection()),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+                  TodaysOffersSection(),
+                ],
+              ),
             ),
-            SizedBox(height: 24),
-            TodaysOffersSection(),
           ],
         ),
       ),
