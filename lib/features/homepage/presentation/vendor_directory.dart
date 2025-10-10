@@ -4,6 +4,7 @@ import 'package:operation_kalkan/features/homepage/presentation/models/card_item
 import 'package:operation_kalkan/features/homepage/presentation/widgets/horizontal_carousel.dart';
 import 'package:operation_kalkan/features/homepage/presentation/widgets/section_title.dart';
 import 'package:operation_kalkan/features/vendor/presentation/vendor_page.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class VendorDirectoryPage extends StatelessWidget {
   const VendorDirectoryPage({super.key, this.resortName = defaultResortName});
@@ -14,7 +15,10 @@ class VendorDirectoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtleTextColor = Colors.grey[600];
+    final textTheme = context.textTheme;
+    final subtleTextColor = context.colorScheme.onSurface.withValues(
+      alpha: 0.6,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +28,7 @@ class VendorDirectoryPage extends StatelessWidget {
             const Text('Your Trip'),
             Text(
               resortName,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              style: textTheme.bodyMedium?.copyWith(
                 color: subtleTextColor,
               ),
             ),
@@ -38,7 +42,7 @@ class VendorDirectoryPage extends StatelessWidget {
           children: [
             Text(
               'Discover experiences tailored for you.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              style: textTheme.bodyLarge?.copyWith(
                 color: subtleTextColor,
               ),
             ),

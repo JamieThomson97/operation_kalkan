@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/vendor/data/vendor_static_content.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class VendorMenuTabs extends StatelessWidget {
   const VendorMenuTabs({
@@ -17,11 +18,12 @@ class VendorMenuTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
     final shadows = visible
         ? [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: colorScheme.shadow.withValues(alpha: 0.06),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -55,17 +57,17 @@ class VendorMenuTabs extends StatelessWidget {
                   selected: selected,
                   onSelected: (_) => onCategorySelected(index),
                   selectedColor: Colors.transparent,
-                  backgroundColor: Colors.white,
+                  backgroundColor: colorScheme.surface,
                   showCheckmark: false,
                   labelStyle: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                     color: selected
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurface,
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
                   ),
                   side: BorderSide(
                     color: selected
-                        ? theme.colorScheme.primary.withValues(alpha: 0.45)
+                        ? colorScheme.primary.withValues(alpha: 0.45)
                         : theme.dividerColor.withValues(alpha: 0.4),
                   ),
                   shape: RoundedRectangleBorder(

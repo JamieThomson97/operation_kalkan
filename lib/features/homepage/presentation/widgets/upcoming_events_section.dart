@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class UpcomingEventsSection extends StatelessWidget {
   const UpcomingEventsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = context.theme;
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
@@ -50,7 +53,9 @@ class _UpcomingEventRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.textTheme;
+    final mutedColor =
+        context.colorScheme.onSurface.withValues(alpha: 0.75);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +70,7 @@ class _UpcomingEventRow extends StatelessWidget {
         Text(
           event.detail,
           style: textTheme.bodyMedium?.copyWith(
-            color: textTheme.bodyMedium?.color?.withValues(alpha: 0.75),
+            color: mutedColor,
           ),
         ),
       ],

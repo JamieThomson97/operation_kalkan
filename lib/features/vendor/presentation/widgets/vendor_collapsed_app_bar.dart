@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class VendorCollapsedAppBar extends StatelessWidget {
   const VendorCollapsedAppBar({
@@ -18,12 +19,13 @@ class VendorCollapsedAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
     final media = MediaQuery.of(context);
     final shadows = visible
         ? [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

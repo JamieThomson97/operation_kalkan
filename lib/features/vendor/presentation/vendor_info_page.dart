@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class VendorInfoPage extends StatelessWidget {
   const VendorInfoPage({required this.item, super.key});
@@ -26,7 +27,8 @@ class VendorInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final dividerColor = theme.dividerColor.withValues(alpha: 0.2);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +66,7 @@ class VendorInfoPage extends StatelessWidget {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: theme.dividerColor.withValues(alpha: 0.2),
+                      color: dividerColor,
                     ),
                 ],
               ],
@@ -108,7 +110,7 @@ class VendorInfoPage extends StatelessWidget {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: theme.dividerColor.withValues(alpha: 0.2),
+                      color: dividerColor,
                     ),
                 ],
               ],
@@ -128,12 +130,13 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

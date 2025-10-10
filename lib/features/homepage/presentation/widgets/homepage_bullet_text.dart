@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class HomepageBulletText extends StatelessWidget {
   const HomepageBulletText(this.text, {super.key});
@@ -7,7 +8,7 @@ class HomepageBulletText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final textTheme = context.textTheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -15,7 +16,7 @@ class HomepageBulletText extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: theme.textTheme.bodyMedium,
+            style: textTheme.bodyMedium,
           ),
         ),
       ],

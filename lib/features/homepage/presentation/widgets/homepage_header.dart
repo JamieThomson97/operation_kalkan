@@ -1,13 +1,15 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class HomepageHeader extends StatelessWidget {
   const HomepageHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.textTheme;
+    final colorScheme = context.colorScheme;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -37,8 +39,8 @@ class HomepageHeader extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.white.withValues(alpha: 0.18),
-                          Colors.white.withValues(alpha: 0.45),
+                          colorScheme.surface.withValues(alpha: 0.18),
+                          colorScheme.surface.withValues(alpha: 0.45),
                         ],
                       ),
                     ),
@@ -54,8 +56,8 @@ class HomepageHeader extends StatelessWidget {
                     child: Text(
                       'Welcome back',
                       style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                         letterSpacing: -0.1,
                       ),
                     ),

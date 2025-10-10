@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class SectionTitle extends StatelessWidget {
   const SectionTitle({required this.title, super.key});
@@ -12,18 +13,18 @@ class SectionTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: context.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w500,
           ),
         ),
         TextButton(
           onPressed: () {},
           style: TextButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: context.colorScheme.primary,
             padding: EdgeInsets.zero,
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+            textStyle: context.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),

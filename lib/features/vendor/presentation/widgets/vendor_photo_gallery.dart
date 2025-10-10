@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/vendor/data/vendor_static_content.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 typedef VendorPhotoTapCallback =
@@ -103,7 +104,7 @@ class VendorPhotoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
 
     return Hero(
       tag: heroTag,

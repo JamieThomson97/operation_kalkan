@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class CarouselCard extends StatelessWidget {
@@ -15,12 +16,14 @@ class CarouselCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const imageRadius = Radius.circular(8);
-    final subtleTextColor = Colors.grey[600];
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+    final subtleTextColor = colorScheme.onSurface.withValues(alpha: 0.65);
 
     return SizedBox(
       width: 200,
       child: Material(
-        color: Colors.white,
+        color: colorScheme.surface,
         child: InkWell(
           onTap: onTap == null ? null : () => onTap!(item),
           child: Column(
@@ -33,12 +36,12 @@ class CarouselCard extends StatelessWidget {
                   child: SafeNetworkImage(
                     imageUrl: item.image,
                     fit: BoxFit.cover,
-                    placeholder: Container(
-                      color: Colors.grey[300],
-                      child: const Icon(
+                    placeholder: ColoredBox(
+                      color: colorScheme.surfaceContainerHighest,
+                      child: Icon(
                         Icons.photo,
                         size: 64,
-                        color: Colors.white70,
+                        color: colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -51,14 +54,14 @@ class CarouselCard extends StatelessWidget {
                   children: [
                     Text(
                       item.title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      style: textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       item.subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: textTheme.bodySmall?.copyWith(
                         color: subtleTextColor,
                         fontWeight: FontWeight.w300,
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class HomepageSectionCard extends StatelessWidget {
   const HomepageSectionCard({
@@ -12,8 +13,10 @@ class HomepageSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colorScheme = context.colorScheme;
     return Card(
+      color: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class TodaysScheduleSection extends StatelessWidget {
   const TodaysScheduleSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final textTheme = theme.textTheme;
-    const scheduleCardColor = Colors.white;
+    final colorScheme = theme.colorScheme;
 
     return Container(
       decoration: BoxDecoration(
-        color: scheduleCardColor,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
@@ -52,7 +53,9 @@ class _ScheduleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.textTheme;
+    final mutedColor =
+        context.colorScheme.onSurface.withValues(alpha: 0.75);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +70,7 @@ class _ScheduleRow extends StatelessWidget {
         Text(
           entry.time,
           style: textTheme.bodyMedium?.copyWith(
-            color: textTheme.bodyMedium?.color?.withValues(alpha: 0.75),
+            color: mutedColor,
           ),
         ),
       ],

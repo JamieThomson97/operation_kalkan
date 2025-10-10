@@ -12,6 +12,7 @@ import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_inf
 import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_menu_content.dart';
 import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_menu_tabs.dart';
 import 'package:operation_kalkan/features/vendor/presentation/widgets/vendor_photo_gallery.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class VendorPage extends StatefulWidget {
@@ -156,7 +157,7 @@ class _VendorPageState extends State<VendorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final media = MediaQuery.of(context);
     final heroHeight = media.size.height * 0.35;
 
@@ -185,7 +186,7 @@ class _VendorPageState extends State<VendorPage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
+                        color: theme.colorScheme.shadow.withValues(alpha: 0.08),
                         blurRadius: 28,
                         offset: const Offset(0, -6),
                       ),
@@ -214,8 +215,8 @@ class _VendorPageState extends State<VendorPage> {
                               FilledButton(
                                 onPressed: () {},
                                 style: FilledButton.styleFrom(
-                                  backgroundColor: Colors.black87,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: theme.colorScheme.primary,
+                                  foregroundColor: theme.colorScheme.onPrimary,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 20,
                                     vertical: 12,
@@ -357,10 +358,12 @@ class _VendorPageState extends State<VendorPage> {
     String imageUrl,
     String heroTag,
   ) {
+    final theme = context.theme;
+
     unawaited(
       showDialog<void>(
         context: context,
-        barrierColor: Colors.black.withValues(alpha: 0.92),
+        barrierColor: theme.colorScheme.scrim.withValues(alpha: 0.92),
         builder: (dialogContext) {
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -387,12 +390,14 @@ class _VendorPageState extends State<VendorPage> {
                     right: 16,
                     child: IconButton(
                       style: IconButton.styleFrom(
-                        backgroundColor: Colors.black54,
+                        backgroundColor: theme.colorScheme.scrim.withValues(
+                          alpha: 0.54,
+                        ),
                       ),
                       onPressed: () => Navigator.of(dialogContext).pop(),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close,
-                        color: Colors.white,
+                        color: theme.colorScheme.onPrimary,
                       ),
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 
 class VendorInfoSection extends StatelessWidget {
   const VendorInfoSection({
@@ -10,11 +11,12 @@ class VendorInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
     final dividerColor = theme.dividerColor.withValues(alpha: 0.25);
-    const cardFill = Color(0xFFF9F9F9);
+    final cardFill = colorScheme.surfaceContainerHighest;
     final labelStyle = theme.textTheme.bodyMedium?.copyWith(
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.64),
+      color: colorScheme.onSurface.withValues(alpha: 0.64),
       fontWeight: FontWeight.w500,
       fontSize: 12,
     );
@@ -22,7 +24,7 @@ class VendorInfoSection extends StatelessWidget {
       fontWeight: FontWeight.w700,
     );
     final secondaryValueStyle = theme.textTheme.bodySmall?.copyWith(
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+      color: colorScheme.onSurface.withValues(alpha: 0.55),
       fontWeight: FontWeight.w300,
       height: 1.2,
     );
@@ -71,7 +73,11 @@ class VendorInfoSection extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.star, color: Colors.amber[600], size: 18),
+                      Icon(
+                        Icons.star,
+                        color: colorScheme.secondary,
+                        size: 18,
+                      ),
                       const SizedBox(width: 6),
                       Text('4.8', style: valueStyle),
                     ],

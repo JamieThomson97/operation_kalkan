@@ -4,7 +4,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:operation_kalkan/features/homepage/presentation/models/card_item.dart';
+import 'package:operation_kalkan/features/homepage/presentation/widgets/homepage_section_card.dart';
 import 'package:operation_kalkan/features/vendor/presentation/vendor_page.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class RecommendedForYouSection extends StatelessWidget {
@@ -12,8 +14,9 @@ class RecommendedForYouSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final highlightColor = theme.colorScheme.primary;
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
+    final highlightColor = colorScheme.primary;
     void onVendorTap(_RecommendedVendor vendor) {
       unawaited(
         context.pushNamed(
@@ -23,51 +26,44 @@ class RecommendedForYouSection extends StatelessWidget {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Recommended for you',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 16),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final availableWidth = constraints.maxWidth;
-            const double priorityMinWidth = 180;
-            const double standardMinWidth = 130;
-            const double rowSpacing = 12;
-            final standardWidth = max(standardMinWidth, availableWidth * 0.34);
-            final standardHeight = standardWidth;
-            final priorityWidth = max(priorityMinWidth, availableWidth * 0.46);
-            final priorityHeight = standardHeight * 2 + rowSpacing;
+    return HomepageSectionCard(
+      title: 'Recommended for you',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final availableWidth = constraints.maxWidth;
+          const double priorityMinWidth = 180;
+          const double standardMinWidth = 130;
+          const double rowSpacing = 12;
+          final standardWidth = max(standardMinWidth, availableWidth * 0.34);
+          final standardHeight = standardWidth;
+          final priorityWidth = max(priorityMinWidth, availableWidth * 0.46);
+          final priorityHeight = standardHeight * 2 + rowSpacing;
 
-            final columns = _buildVendorColumns(
-              vendors: _recommendedVendors,
-              standardWidth: standardWidth,
-              standardHeight: standardHeight,
-              priorityWidth: priorityWidth,
-              priorityHeight: priorityHeight,
-              rowSpacing: rowSpacing,
-              highlightColor: highlightColor,
-              onVendorTap: onVendorTap,
-            );
+          final columns = _buildVendorColumns(
+            vendors: _recommendedVendors,
+            standardWidth: standardWidth,
+            standardHeight: standardHeight,
+            priorityWidth: priorityWidth,
+            priorityHeight: priorityHeight,
+            rowSpacing: rowSpacing,
+            highlightColor: highlightColor,
+            surfaceColor: colorScheme.surfaceContainerHighest,
+            onSurface: colorScheme.onSurface,
+            onVendorTap: onVendorTap,
+          );
 
-            return SizedBox(
-              height: priorityHeight,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) => columns[index],
-                separatorBuilder: (context, _) => const SizedBox(width: 16),
-                itemCount: columns.length,
-              ),
-            );
-          },
-        ),
-      ],
+          return SizedBox(
+            height: priorityHeight,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) => columns[index],
+              separatorBuilder: (context, _) => const SizedBox(width: 16),
+              itemCount: columns.length,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -79,6 +75,8 @@ class RecommendedForYouSection extends StatelessWidget {
     required double priorityHeight,
     required double rowSpacing,
     required Color highlightColor,
+    required Color surfaceColor,
+    required Color onSurface,
     required ValueChanged<_RecommendedVendor> onVendorTap,
   }) {
     final columns = <Widget>[];
@@ -138,12 +136,12 @@ class RecommendedForYouSection extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
-                      color: Colors.grey[100],
+                      color: surfaceColor,
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Icon(
                         Icons.more_horiz,
-                        color: Colors.black26,
+                        color: onSurface.withValues(alpha: 0.26),
                       ),
                     ),
                   ),
@@ -189,6 +187,8 @@ class _RecommendedVendorTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(18);
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
 
     return SizedBox(
       width: width,
@@ -204,7 +204,7 @@ class _RecommendedVendorTile extends StatelessWidget {
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: colorScheme.surfaceContainerHighest,
                   ),
                   child: SafeNetworkImage(
                     imageUrl: vendor.imageUrl,
@@ -219,8 +219,8 @@ class _RecommendedVendorTile extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.05),
-                        Colors.black.withValues(alpha: 0.8),
+                        colorScheme.scrim.withValues(alpha: 0.05),
+                        colorScheme.scrim.withValues(alpha: 0.8),
                       ],
                     ),
                   ),
@@ -232,8 +232,8 @@ class _RecommendedVendorTile extends StatelessWidget {
                 bottom: 16,
                 child: Text(
                   vendor.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/features/vendor/data/vendor_static_content.dart';
+import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class VendorMenuContent extends StatelessWidget {
@@ -16,7 +17,7 @@ class VendorMenuContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
 
     return KeyedSubtree(
       key: menuSectionKey,
@@ -54,7 +55,7 @@ class VendorMenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,9 +91,11 @@ class VendorMenuItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final textTheme = theme.textTheme;
-    final secondaryColor = theme.colorScheme.onSurface.withValues(alpha: 0.68);
+    final secondaryColor = context.colorScheme.onSurface.withValues(
+      alpha: 0.68,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
