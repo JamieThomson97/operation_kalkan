@@ -21,7 +21,6 @@ class HomepageHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: const Color(0xFFF8F6F1),
       padding: EdgeInsets.fromLTRB(
         24,
         topPadding + 16,
