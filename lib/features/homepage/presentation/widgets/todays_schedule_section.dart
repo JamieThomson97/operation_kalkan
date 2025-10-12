@@ -9,57 +9,63 @@ class TodaysScheduleSection extends StatelessWidget {
     final theme = context.theme;
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
-    final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
-    final backgroundColor = colorScheme.surfaceBright;
     final headerColor = colorScheme.onSurface;
     final supportingColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.9);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: 32,
-            offset: const Offset(0, 18),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 26),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "Today's schedule",
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: headerColor,
-                    ),
-                  ),
+            Expanded(
+              child: Text(
+                "Today's schedule",
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: headerColor,
                 ),
-                Text(
-                  'Full day',
-                  style: textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: supportingColor,
-                  ),
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 20),
-            for (var index = 0; index < _scheduleEntries.length; index++) ...[
-              _ScheduleRow(entry: _scheduleEntries[index]),
-              if (index != _scheduleEntries.length - 1)
-                const SizedBox(height: 16),
-            ],
+            Text(
+              'Full day',
+              style: textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: supportingColor,
+              ),
+            ),
           ],
         ),
-      ),
+        const SizedBox(height: 8),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceBright,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.08),
+                blurRadius: 32,
+                offset: const Offset(0, 18),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(22, 20, 22, 24),
+            child: Column(
+              children: [
+                for (
+                  var index = 0;
+                  index < _scheduleEntries.length;
+                  index++
+                ) ...[
+                  _ScheduleRow(entry: _scheduleEntries[index]),
+                  if (index != _scheduleEntries.length - 1)
+                    const SizedBox(height: 16),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -129,6 +135,13 @@ class _ScheduleRow extends StatelessWidget {
               color: cardColor,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: borderColor),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
