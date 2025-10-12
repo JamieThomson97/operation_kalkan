@@ -30,7 +30,6 @@ class Homepage extends StatelessWidget {
                   SizedBox(height: 24),
                   UpcomingEventsSection(),
                   SizedBox(height: 24),
-                  TodaysOffersSection(),
                 ],
               ),
             ),
