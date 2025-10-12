@@ -26,14 +26,9 @@ class Homepage extends StatelessWidget {
                 children: const [
                   RecommendedForYouSection(),
                   SizedBox(height: 24),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: TodaysScheduleSection()),
-                      SizedBox(width: 16),
-                      Expanded(child: UpcomingEventsSection()),
-                    ],
-                  ),
+                  TodaysScheduleSection(),
+                  SizedBox(height: 24),
+                  UpcomingEventsSection(),
                   SizedBox(height: 24),
                   TodaysOffersSection(),
                 ],

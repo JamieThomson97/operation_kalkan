@@ -9,28 +9,57 @@ class TodaysScheduleSection extends StatelessWidget {
     final theme = context.theme;
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
+    final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
+    final backgroundColor = colorScheme.surfaceBright;
+    final headerColor = colorScheme.onSurface;
+    final supportingColor =
+        colorScheme.onSurfaceVariant.withValues(alpha: 0.9);
 
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Today's Schedule",
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 32,
+            offset: const Offset(0, 18),
           ),
-          const SizedBox(height: 12),
-          for (var i = 0; i < _scheduleEntries.length; i++) ...[
-            _ScheduleRow(entry: _scheduleEntries[i]),
-            if (i != _scheduleEntries.length - 1) const SizedBox(height: 12),
-          ],
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(22, 22, 22, 26),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Today's schedule",
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: headerColor,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Full day',
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: supportingColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            for (var index = 0; index < _scheduleEntries.length; index++) ...[
+              _ScheduleRow(entry: _scheduleEntries[index]),
+              if (index != _scheduleEntries.length - 1)
+                const SizedBox(height: 16),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -39,11 +68,19 @@ class TodaysScheduleSection extends StatelessWidget {
 class _ScheduleEntry {
   const _ScheduleEntry({
     required this.time,
-    required this.detail,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBackgroundColor,
   });
 
   final String time;
-  final String detail;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBackgroundColor;
 }
 
 class _ScheduleRow extends StatelessWidget {
@@ -54,23 +91,67 @@ class _ScheduleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
-    final mutedColor =
-        context.colorScheme.onSurface.withValues(alpha: 0.75);
+    final colorScheme = context.colorScheme;
+    final timeColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
+    final cardColor = colorScheme.surface;
+    final borderColor = colorScheme.outlineVariant.withValues(alpha: 0.35);
 
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          entry.detail,
-          style: textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        SizedBox(
+          width: 62,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              entry.time,
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: timeColor,
+                letterSpacing: 0.2,
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 2),
-        Text(
-          entry.time,
-          style: textTheme.bodyMedium?.copyWith(
-            color: mutedColor,
+        const SizedBox(width: 16),
+        Expanded(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: borderColor),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 18, 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ScheduleIcon(entry: entry),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.title,
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          entry.subtitle,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
@@ -78,17 +159,62 @@ class _ScheduleRow extends StatelessWidget {
   }
 }
 
+class _ScheduleIcon extends StatelessWidget {
+  const _ScheduleIcon({required this.entry});
+
+  final _ScheduleEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: entry.iconBackgroundColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: Icon(
+          entry.icon,
+          color: entry.iconColor,
+          size: 24,
+        ),
+      ),
+    );
+  }
+}
+
 const _scheduleEntries = [
   _ScheduleEntry(
     time: '09:00',
-    detail: 'Guided snorkel adventure',
+    title: 'Breakfast at Harbor Cafe',
+    subtitle: 'Table for 2 • Confirmed',
+    icon: Icons.free_breakfast_outlined,
+    iconColor: Color(0xFF2563EB),
+    iconBackgroundColor: Color(0xFFE8F1FF),
   ),
   _ScheduleEntry(
-    time: '14:30',
-    detail: 'Spa appointment',
+    time: '13:30',
+    title: 'Cliffside Hike',
+    subtitle: 'Meet at North Gate • 2 hrs',
+    icon: Icons.landscape_outlined,
+    iconColor: Color(0xFF0F766E),
+    iconBackgroundColor: Color(0xFFE6F5F3),
   ),
   _ScheduleEntry(
-    time: '19:00',
-    detail: 'Dinner at Skyline Lounge',
+    time: '18:30',
+    title: 'Spa Appointment',
+    subtitle: 'Serenity Spa • 60 min',
+    icon: Icons.spa_outlined,
+    iconColor: Color(0xFF9333EA),
+    iconBackgroundColor: Color(0xFFF2E8FF),
+  ),
+  _ScheduleEntry(
+    time: '20:00',
+    title: 'Dinner at Azure Terrace',
+    subtitle: "Chef's Tasting • 8 pm",
+    icon: Icons.restaurant_menu_outlined,
+    iconColor: Color(0xFFB45309),
+    iconBackgroundColor: Color(0xFFFDF3E7),
   ),
 ];
