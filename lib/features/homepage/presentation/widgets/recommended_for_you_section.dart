@@ -86,7 +86,7 @@ class RecommendedForYouSection extends StatelessWidget {
                 : estimatedHeights.reduce(
                     (a, b) => a > b ? a : b,
                   );
-            final cardHeight = baseHeight.ceilToDouble() + 24;
+            final cardHeight = 360.0;
             return SizedBox(
               height: cardHeight,
               child: ListView.separated(
@@ -232,8 +232,9 @@ class _RecommendedVendorCard extends StatelessWidget {
                             onPressed: onTap,
                             style: FilledButton.styleFrom(
                               minimumSize: const Size(0, 36),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -405,9 +406,9 @@ class _VendorTag extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: foregroundColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: foregroundColor,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -436,9 +437,9 @@ class _VendorMetadataRow extends StatelessWidget {
         Text(
           vendor.ratingLabel,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: metadataColor,
-                fontWeight: FontWeight.w600,
-              ),
+            color: metadataColor,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(width: 16),
         Icon(Icons.place_outlined, color: metadataColor, size: 18),
@@ -446,8 +447,8 @@ class _VendorMetadataRow extends StatelessWidget {
         Text(
           vendor.distanceLabel,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: metadataColor,
-              ),
+            color: metadataColor,
+          ),
         ),
       ],
     );
@@ -473,7 +474,7 @@ const _recommendedVendors = [
   _RecommendedVendor(
     card: CardItem(
       title: 'Sunset Terrace',
-      subtitle: 'Tapas plates and relaxed terrace beats',
+      subtitle: 'Tapas plates and a relaxed terrace',
       image:
           'https://images.unsplash.com/photo-1470246973918-29a93221c455?auto=format&fit=crop&w=1200&q=80',
     ),
