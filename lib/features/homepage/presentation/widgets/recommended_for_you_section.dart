@@ -64,6 +64,8 @@ class RecommendedForYouSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+        const _RecommendedFiltersBar(),
+        const SizedBox(height: 16),
         LayoutBuilder(
           builder: (context, constraints) {
             final maxWidth = constraints.maxWidth;
@@ -110,6 +112,115 @@ class RecommendedForYouSection extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _RecommendedFilter {
+  const _RecommendedFilter({
+    required this.label,
+    required this.icon,
+  });
+
+  final String label;
+  final IconData icon;
+}
+
+const _recommendedFilters = [
+  _RecommendedFilter(
+    label: 'Beachy',
+    icon: Icons.beach_access_outlined,
+  ),
+  _RecommendedFilter(
+    label: 'Scenic',
+    icon: Icons.camera_alt_outlined,
+  ),
+  _RecommendedFilter(
+    label: 'Live music',
+    icon: Icons.music_note_outlined,
+  ),
+  _RecommendedFilter(
+    label: 'Drinks',
+    icon: Icons.local_drink_outlined,
+  ),
+];
+
+class _RecommendedFiltersBar extends StatelessWidget {
+  const _RecommendedFiltersBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final foregroundColor = colorScheme.onSurface.withValues(alpha: 0.8);
+    final borderColor = colorScheme.outlineVariant.withValues(alpha: 0.6);
+    final backgroundColor = colorScheme.surface;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          for (var index = 0; index < _recommendedFilters.length; index++) ...[
+            if (index > 0) const SizedBox(width: 12),
+            _RecommendedFilterChip(
+              filter: _recommendedFilters[index],
+              foregroundColor: foregroundColor,
+              backgroundColor: backgroundColor,
+              borderColor: borderColor,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _RecommendedFilterChip extends StatelessWidget {
+  const _RecommendedFilterChip({
+    required this.filter,
+    required this.foregroundColor,
+    required this.backgroundColor,
+    required this.borderColor,
+  });
+
+  final _RecommendedFilter filter;
+  final Color foregroundColor;
+  final Color backgroundColor;
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = context.textTheme.labelLarge?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: foregroundColor,
+    );
+
+    return Material(
+      color: backgroundColor,
+      shape: StadiumBorder(
+        side: BorderSide(color: borderColor),
+      ),
+      child: InkWell(
+        onTap: () {}, // Placeholder for future filter handling.
+        customBorder: const StadiumBorder(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(filter.icon, size: 18, color: foregroundColor),
+              const SizedBox(width: 8),
+              Text(
+                filter.label,
+                style: textStyle,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
