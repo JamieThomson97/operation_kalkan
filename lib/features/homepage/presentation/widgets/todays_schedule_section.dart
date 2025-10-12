@@ -12,8 +12,7 @@ class TodaysScheduleSection extends StatelessWidget {
     final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
     final backgroundColor = colorScheme.surfaceBright;
     final headerColor = colorScheme.onSurface;
-    final supportingColor =
-        colorScheme.onSurfaceVariant.withValues(alpha: 0.9);
+    final supportingColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.9);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -95,6 +94,20 @@ class _ScheduleRow extends StatelessWidget {
     final timeColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
     final cardColor = colorScheme.surface;
     final borderColor = colorScheme.outlineVariant.withValues(alpha: 0.35);
+    final timeStyle = textTheme.bodySmall?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: timeColor,
+      letterSpacing: 0.2,
+    );
+    final titleStyle = textTheme.titleSmall?.copyWith(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: colorScheme.onSurface,
+    );
+    final subtitleStyle = textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurfaceVariant,
+      fontSize: 10,
+    );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,18 +115,14 @@ class _ScheduleRow extends StatelessWidget {
         SizedBox(
           width: 62,
           child: Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 6),
             child: Text(
               entry.time,
-              style: textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: timeColor,
-                letterSpacing: 0.2,
-              ),
+              style: timeStyle,
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 2),
         Expanded(
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -122,29 +131,28 @@ class _ScheduleRow extends StatelessWidget {
               border: Border.all(color: borderColor),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 18, 16),
+              padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _ScheduleIcon(entry: entry),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           entry.title,
-                          style: textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.onSurface,
-                          ),
+                          style: titleStyle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           entry.subtitle,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          style: subtitleStyle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -169,15 +177,15 @@ class _ScheduleIcon extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: entry.iconBackgroundColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: SizedBox(
-        width: 48,
-        height: 48,
+        width: 40,
+        height: 40,
         child: Icon(
           entry.icon,
           color: entry.iconColor,
-          size: 24,
+          size: 20,
         ),
       ),
     );
