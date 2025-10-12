@@ -50,11 +50,12 @@ class UpcomingEventsSection extends StatelessWidget {
               ),
           ],
         ),
+        const SizedBox(height: 12),
         LayoutBuilder(
           builder: (context, constraints) {
             final maxWidth = constraints.maxWidth;
             const crossAxisCount = 2;
-            const spacing = 16.0;
+            const spacing = 12.0;
             final availableWidth = maxWidth.isFinite ? maxWidth : 320.0;
             final cardWidth =
                 (availableWidth - spacing * (crossAxisCount - 1)) /
@@ -65,6 +66,7 @@ class UpcomingEventsSection extends StatelessWidget {
             return GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
                 crossAxisSpacing: spacing,
@@ -148,7 +150,7 @@ class _UpcomingEventCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: shadowColor,
-              blurRadius: 8,
+              blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],

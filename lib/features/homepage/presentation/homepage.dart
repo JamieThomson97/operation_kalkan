@@ -16,14 +16,14 @@ class Homepage extends StatelessWidget {
         top: false,
         child: ListView(
           padding: EdgeInsets.zero,
-          children: [
-            const HomepageHeader(),
-            const SizedBox(height: 24),
+          children: const [
+            HomepageHeader(),
+            SizedBox(height: 24),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
+                children: [
                   RecommendedForYouSection(),
                   SizedBox(height: 24),
                   TodaysScheduleSection(),
