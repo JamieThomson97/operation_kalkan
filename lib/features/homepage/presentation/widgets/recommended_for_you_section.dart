@@ -152,8 +152,8 @@ class _RecommendedFiltersBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final foregroundColor = colorScheme.onSurface.withValues(alpha: 0.8);
-    final borderColor = colorScheme.outlineVariant.withValues(alpha: 0.6);
-    final backgroundColor = colorScheme.surface;
+    final backgroundColor = Colors.white;
+    final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -161,12 +161,12 @@ class _RecommendedFiltersBar extends StatelessWidget {
       child: Row(
         children: [
           for (var index = 0; index < _recommendedFilters.length; index++) ...[
-            if (index > 0) const SizedBox(width: 12),
+            if (index > 0) const SizedBox(width: 10),
             _RecommendedFilterChip(
               filter: _recommendedFilters[index],
               foregroundColor: foregroundColor,
               backgroundColor: backgroundColor,
-              borderColor: borderColor,
+              shadowColor: shadowColor,
             ),
           ],
         ],
@@ -180,44 +180,55 @@ class _RecommendedFilterChip extends StatelessWidget {
     required this.filter,
     required this.foregroundColor,
     required this.backgroundColor,
-    required this.borderColor,
+    required this.shadowColor,
   });
 
   final _RecommendedFilter filter;
   final Color foregroundColor;
   final Color backgroundColor;
-  final Color borderColor;
+  final Color shadowColor;
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = context.textTheme.labelLarge?.copyWith(
+    final textStyle = context.textTheme.labelMedium?.copyWith(
       fontWeight: FontWeight.w600,
       color: foregroundColor,
     );
 
-    return Material(
-      color: backgroundColor,
-      shape: StadiumBorder(
-        side: BorderSide(color: borderColor),
-      ),
-      child: InkWell(
-        onTap: () {}, // Placeholder for future filter handling.
-        customBorder: const StadiumBorder(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 3,
+            offset: const Offset(0, 2),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(filter.icon, size: 18, color: foregroundColor),
-              const SizedBox(width: 8),
-              Text(
-                filter.label,
-                style: textStyle,
-              ),
-            ],
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        shape: const StadiumBorder(),
+        child: InkWell(
+          onTap: () {}, // Placeholder for future filter handling.
+          customBorder: const StadiumBorder(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(filter.icon, size: 15, color: foregroundColor),
+                const SizedBox(width: 6),
+                Text(
+                  filter.label,
+                  style: textStyle,
+                ),
+              ],
+            ),
           ),
         ),
       ),
