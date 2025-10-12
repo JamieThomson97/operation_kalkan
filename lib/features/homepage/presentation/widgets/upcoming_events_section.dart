@@ -50,7 +50,6 @@ class UpcomingEventsSection extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 16),
         LayoutBuilder(
           builder: (context, constraints) {
             final maxWidth = constraints.maxWidth;
@@ -60,7 +59,7 @@ class UpcomingEventsSection extends StatelessWidget {
             final cardWidth =
                 (availableWidth - spacing * (crossAxisCount - 1)) /
                 crossAxisCount;
-            final cardHeight = cardWidth * 1.3;
+            final cardHeight = 200.0;
             final childAspectRatio = cardWidth / cardHeight;
 
             return GridView.builder(
@@ -138,7 +137,7 @@ class _UpcomingEventCard extends StatelessWidget {
     final textTheme = context.textTheme;
     final borderRadius = BorderRadius.circular(14);
     final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
-    final imageHeight = height * 0.4;
+    final imageHeight = height * 0.36;
 
     return SizedBox(
       width: width,
@@ -149,8 +148,8 @@ class _UpcomingEventCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: shadowColor,
-              blurRadius: 14,
-              offset: const Offset(0, 8),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -170,92 +169,48 @@ class _UpcomingEventCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _EventTag(
-                          label: event.tag,
-                          icon: event.tagIcon,
-                          colorScheme: colorScheme,
-                          highlightColor: highlightColor,
-                          isFeatured: event.isFeatured,
-                        ),
                         const SizedBox(height: 6),
-                        Text(
-                          event.title,
-                          style: textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurface,
-                            letterSpacing: -0.1,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          event.subtitle,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurface.withValues(alpha: 0.7),
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const Spacer(),
-                        _EventMetadataRow(
-                          colorScheme: colorScheme,
-                          event: event,
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: FilledButton.icon(
-                                onPressed: onTap,
-                                style: FilledButton.styleFrom(
-                                  minimumSize: const Size(0, 32),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                                icon: const Icon(
-                                  Icons.event_available_outlined,
-                                  size: 16,
-                                ),
-                                label: Text(
-                                  event.primaryActionLabel,
-                                  style: textTheme.labelMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: onTap,
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                ),
-                                minimumSize: const Size(0, 32),
-                                visualDensity: VisualDensity.compact,
-                              ),
-                              child: Text(
-                                event.secondaryActionLabel,
-                                style: textTheme.labelMedium?.copyWith(
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                event.title,
+                                style: textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
+                                  color: colorScheme.onSurface,
+                                  fontSize: 12,
+                                  letterSpacing: -0.1,
+                                  height: 1.2,
                                 ),
-                                maxLines: 1,
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 3),
+                              Text(
+                                event.subtitle,
+                                style: textTheme.bodySmall?.copyWith(
+                                  fontSize: 11,
+                                  height: 1.3,
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const Spacer(),
+                              _EventMetadataRow(
+                                colorScheme: colorScheme,
+                                event: event,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -334,7 +289,7 @@ class _EventTag extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 14, color: foregroundColor),
+              Icon(icon, size: 13, color: foregroundColor),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -368,12 +323,12 @@ class _EventMetadataRow extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(Icons.schedule_outlined, color: metadataColor, size: 16),
+            Icon(Icons.schedule_outlined, color: metadataColor, size: 14),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
                 event.scheduleLabel,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: metadataColor,
                   fontWeight: FontWeight.w600,
                 ),
@@ -386,12 +341,12 @@ class _EventMetadataRow extends StatelessWidget {
         const SizedBox(height: 6),
         Row(
           children: [
-            Icon(Icons.place_outlined, color: metadataColor, size: 16),
+            Icon(Icons.place_outlined, color: metadataColor, size: 14),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
                 event.locationLabel,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: metadataColor,
                 ),
                 maxLines: 1,
