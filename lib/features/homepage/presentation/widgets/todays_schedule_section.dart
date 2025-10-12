@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
+import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class TodaysScheduleSection extends StatelessWidget {
   const TodaysScheduleSection({super.key});
@@ -75,17 +76,13 @@ class _ScheduleEntry {
     required this.time,
     required this.title,
     required this.subtitle,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBackgroundColor,
+    required this.imageUrl,
   });
 
   final String time;
   final String title;
   final String subtitle;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBackgroundColor;
+  final String imageUrl;
 }
 
 class _ScheduleRow extends StatelessWidget {
@@ -148,7 +145,7 @@ class _ScheduleRow extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ScheduleIcon(entry: entry),
+                  _ScheduleThumbnail(imageUrl: entry.imageUrl),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -180,25 +177,21 @@ class _ScheduleRow extends StatelessWidget {
   }
 }
 
-class _ScheduleIcon extends StatelessWidget {
-  const _ScheduleIcon({required this.entry});
+class _ScheduleThumbnail extends StatelessWidget {
+  const _ScheduleThumbnail({required this.imageUrl});
 
-  final _ScheduleEntry entry;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: entry.iconBackgroundColor,
-        borderRadius: BorderRadius.circular(14),
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
       child: SizedBox(
         width: 40,
         height: 40,
-        child: Icon(
-          entry.icon,
-          color: entry.iconColor,
-          size: 20,
+        child: SafeNetworkImage(
+          imageUrl: imageUrl,
+          fit: BoxFit.cover,
         ),
       ),
     );
@@ -210,32 +203,28 @@ const _scheduleEntries = [
     time: '09:00',
     title: 'Breakfast at Harbor Cafe',
     subtitle: 'Table for 2 • Confirmed',
-    icon: Icons.free_breakfast_outlined,
-    iconColor: Color(0xFF2563EB),
-    iconBackgroundColor: Color(0xFFE8F1FF),
+    imageUrl:
+        'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=120&h=120&q=80',
   ),
   _ScheduleEntry(
     time: '13:30',
     title: 'Cliffside Hike',
     subtitle: 'Meet at North Gate • 2 hrs',
-    icon: Icons.landscape_outlined,
-    iconColor: Color(0xFF0F766E),
-    iconBackgroundColor: Color(0xFFE6F5F3),
+    imageUrl:
+        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=120&h=120&q=80',
   ),
   _ScheduleEntry(
     time: '18:30',
     title: 'Spa Appointment',
     subtitle: 'Serenity Spa • 60 min',
-    icon: Icons.spa_outlined,
-    iconColor: Color(0xFF9333EA),
-    iconBackgroundColor: Color(0xFFF2E8FF),
+    imageUrl:
+        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=120&h=120&q=80',
   ),
   _ScheduleEntry(
     time: '20:00',
     title: 'Dinner at Azure Terrace',
     subtitle: "Chef's Tasting • 8 pm",
-    icon: Icons.restaurant_menu_outlined,
-    iconColor: Color(0xFFB45309),
-    iconBackgroundColor: Color(0xFFFDF3E7),
+    imageUrl:
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=120&h=120&q=80',
   ),
 ];
