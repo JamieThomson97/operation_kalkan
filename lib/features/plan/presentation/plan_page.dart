@@ -227,24 +227,28 @@ class _ItineraryCard extends StatelessWidget {
   static final _items = <_ItineraryEntry>[
     const _ItineraryEntry(
       time: '08:00',
+      endTime: '09:00',
       title: 'Sunrise Pilates by the marina',
       detail: 'Mat + towels prepped',
       imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
     ),
     const _ItineraryEntry(
       time: '10:30',
+      endTime: '12:00',
       title: 'Slow breakfast at Zest',
       detail: 'Chef Selin tasting menu',
       imageUrl: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17',
     ),
     const _ItineraryEntry(
       time: '14:00',
+      endTime: '17:30',
       title: 'Sail to Black Island coves',
       detail: 'Skipper + mezze onboard',
       imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21',
     ),
     const _ItineraryEntry(
       time: '19:30',
+      endTime: '22:00',
       title: 'Chef’s table at Theia',
       detail: '7-course coastal harvest',
       imageUrl: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371',
@@ -323,12 +327,14 @@ class _ItineraryCard extends StatelessWidget {
 class _ItineraryEntry {
   const _ItineraryEntry({
     required this.time,
+    required this.endTime,
     required this.title,
     required this.detail,
     required this.imageUrl,
   });
 
   final String time;
+  final String endTime;
   final String title;
   final String detail;
   final String imageUrl;
@@ -345,7 +351,12 @@ class _ItineraryRow extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final timeStyle = textTheme.labelLarge?.copyWith(
       color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0.2,
+    );
+    final endTimeStyle = textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.2,
     );
     final titleStyle = textTheme.titleSmall?.copyWith(
@@ -367,7 +378,14 @@ class _ItineraryRow extends StatelessWidget {
           width: 62,
           child: Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Text(entry.time, style: timeStyle),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(entry.time, style: timeStyle),
+                const SizedBox(height: 2),
+                Text(entry.endTime, style: endTimeStyle),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 2),
