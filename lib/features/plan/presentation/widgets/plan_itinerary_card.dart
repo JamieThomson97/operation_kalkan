@@ -72,13 +72,12 @@ class PlanItineraryCard extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
-              child: entries.isEmpty
-                  ? _EmptyItineraryState(
-                      headlineColor: headerColor,
-                      supportingColor: supportingColor,
-                      textTheme: textTheme,
-                    )
-                  : _DiaryTimeline(entries: entries),
+              child: _DiaryTimeline(
+                entries: entries,
+                emptyHeadlineColor: headerColor,
+                emptySupportingColor: supportingColor,
+                textTheme: textTheme,
+              ),
             ),
           ),
         ),
@@ -94,45 +93,6 @@ class PlanItineraryCard extends StatelessWidget {
       return _items;
     }
     return const <_ItineraryEntry>[];
-  }
-}
-
-class _EmptyItineraryState extends StatelessWidget {
-  const _EmptyItineraryState({
-    required this.headlineColor,
-    required this.supportingColor,
-    required this.textTheme,
-  });
-
-  final Color headlineColor;
-  final Color supportingColor;
-  final TextTheme textTheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.trip_origin,
-            color: supportingColor,
-            size: 32,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No plans scheduled',
-            style: textTheme.titleMedium?.copyWith(color: headlineColor),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Pick a date to explore or add activities.',
-            style: textTheme.bodyMedium?.copyWith(color: supportingColor),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -233,9 +193,17 @@ const double _suggestionActionTotalExtent =
     _suggestionActionSpacing + _suggestionActionHeight;
 
 class _DiaryTimeline extends StatelessWidget {
-  const _DiaryTimeline({required this.entries});
+  const _DiaryTimeline({
+    required this.entries,
+    required this.emptyHeadlineColor,
+    required this.emptySupportingColor,
+    required this.textTheme,
+  });
 
   final List<_ItineraryEntry> entries;
+  final Color emptyHeadlineColor;
+  final Color emptySupportingColor;
+  final TextTheme textTheme;
   static const double _hourSlotHeight = 96;
   static const double _minMeetingExtent = 118;
 
@@ -244,19 +212,31 @@ class _DiaryTimeline extends StatelessWidget {
     final orderedEntries = [...entries]
       ..sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
     final timelineEntries = _mergeSuggestions(orderedEntries);
-    if (timelineEntries.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    final earliestStart = timelineEntries.first.startMinutes;
-    final latestEnd = timelineEntries
-        .map((entry) => entry.endMinutes)
-        .reduce((value, element) => element > value ? element : value);
-    final timelineStartHour = earliestStart ~/ 60;
-    final desiredEndHour = (latestEnd / 60).ceil();
-    final timelineEndHour = desiredEndHour <= timelineStartHour
+    const fallbackStartHour = 8;
+    const fallbackEndHour = 22;
+    final hasEntries = timelineEntries.isNotEmpty;
+
+    final earliestStart = hasEntries
+        ? timelineEntries.first.startMinutes
+        : fallbackStartHour * 60;
+    final latestEnd = hasEntries
+        ? timelineEntries
+              .map((entry) => entry.endMinutes)
+              .reduce((value, element) => element > value ? element : value)
+        : fallbackEndHour * 60;
+    final timelineStartHour = hasEntries
+        ? earliestStart ~/ 60
+        : fallbackStartHour;
+    final desiredEndHour = hasEntries
+        ? (latestEnd / 60).ceil()
+        : fallbackEndHour;
+    final computedEndHour = desiredEndHour <= timelineStartHour
         ? timelineStartHour + 1
         : (desiredEndHour > 24 ? 24 : desiredEndHour);
-    final hourCount = timelineEndHour - timelineStartHour;
+    final timelineEndHour = hasEntries
+        ? computedEndHour
+        : math.max(computedEndHour, fallbackEndHour);
+    final hourCount = math.max(1, timelineEndHour - timelineStartHour);
     final timelineStartMinutes = timelineStartHour * 60;
     final spacingBreakpoints = _buildSpacingBreakpoints(
       timelineEntries,
@@ -304,27 +284,29 @@ class _DiaryTimeline extends StatelessWidget {
     var canvasHeight = timelineExtent;
     final positionedEntries = <_PositionedEntry>[];
 
-    for (final entry in timelineEntries) {
-      final top = minuteToPixels(entry.startMinutes);
-      final eventExtent = math.max(
-        entry.durationMinutes / 60 * _hourSlotHeight,
-        _hourSlotHeight * 0.5,
-      );
-      final desiredExtent = math.max(eventExtent, _minMeetingExtent);
-      final suggestionAllowance = entry.isSuggestion
-          ? _suggestionActionTotalExtent
-          : 0;
-      canvasHeight = math.max(
-        canvasHeight,
-        top + desiredExtent + suggestionAllowance,
-      );
-      positionedEntries.add(
-        _PositionedEntry(
-          entry: entry,
-          top: top,
-          isPast: entry.endMinutes <= nowMinutes,
-        ),
-      );
+    if (hasEntries) {
+      for (final entry in timelineEntries) {
+        final top = minuteToPixels(entry.startMinutes);
+        final eventExtent = math.max(
+          entry.durationMinutes / 60 * _hourSlotHeight,
+          _hourSlotHeight * 0.5,
+        );
+        final desiredExtent = math.max(eventExtent, _minMeetingExtent);
+        final suggestionAllowance = entry.isSuggestion
+            ? _suggestionActionTotalExtent
+            : 0;
+        canvasHeight = math.max(
+          canvasHeight,
+          top + desiredExtent + suggestionAllowance,
+        );
+        positionedEntries.add(
+          _PositionedEntry(
+            entry: entry,
+            top: top,
+            isPast: entry.endMinutes <= nowMinutes,
+          ),
+        );
+      }
     }
 
     final indicatorTop = minuteToPixels(nowMinutes);
@@ -351,6 +333,12 @@ class _DiaryTimeline extends StatelessWidget {
                     Positioned.fill(
                       child: _TimelineGrid(bands: hourBands),
                     ),
+                    if (!hasEntries)
+                      _NoEntriesOverlay(
+                        headlineColor: emptyHeadlineColor,
+                        supportingColor: emptySupportingColor,
+                        textTheme: textTheme,
+                      ),
                     if (indicatorWithinTimeline)
                       Positioned(
                         top: indicatorTop,
@@ -444,6 +432,47 @@ class _TimelineGrid extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _NoEntriesOverlay extends StatelessWidget {
+  const _NoEntriesOverlay({
+    required this.headlineColor,
+    required this.supportingColor,
+    required this.textTheme,
+  });
+
+  final Color headlineColor;
+  final Color supportingColor;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.trip_origin,
+              color: supportingColor,
+              size: 28,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No plans scheduled',
+              style: textTheme.titleMedium?.copyWith(color: headlineColor),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Pick another day or add something new.',
+              style: textTheme.bodyMedium?.copyWith(color: supportingColor),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -31,9 +31,10 @@ class _PlanPageState extends State<PlanPage> {
 
   void _shiftDate(int days) {
     setState(() {
-      _selectedDate = DateUtils.dateOnly(
+      final newDate = DateUtils.dateOnly(
         _selectedDate.add(Duration(days: days)),
       );
+      _selectedDate = newDate;
     });
   }
 
