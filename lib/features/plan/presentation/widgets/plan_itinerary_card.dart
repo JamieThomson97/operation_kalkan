@@ -109,6 +109,7 @@ class _ItineraryEntry {
     required this.detail,
     required this.imageUrl,
     this.status = _BookingStatus.confirmed,
+    this.isSuggestion = false,
   });
 
   final TimeOfDay start;
@@ -117,13 +118,43 @@ class _ItineraryEntry {
   final String detail;
   final String imageUrl;
   final _BookingStatus status;
+  final bool isSuggestion;
 
   int get startMinutes => start.hour * 60 + start.minute;
   int get endMinutes => end.hour * 60 + end.minute;
   int get durationMinutes => endMinutes - startMinutes;
 }
 
-enum _BookingStatus { confirmed, pending }
+enum _BookingStatus { confirmed, pending, suggested }
+
+class _SuggestionTemplate {
+  const _SuggestionTemplate({
+    required this.title,
+    required this.detail,
+    required this.imageUrl,
+    required this.durationMinutes,
+  });
+
+  final String title;
+  final String detail;
+  final String imageUrl;
+  final int durationMinutes;
+}
+
+const _suggestionPool = <_SuggestionTemplate>[
+  _SuggestionTemplate(
+    title: 'Lagoon swim + mocktails',
+    detail: 'Crew on standby if you want to drop anchor at Kaputas.',
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+    durationMinutes: 75,
+  ),
+  _SuggestionTemplate(
+    title: 'Olive grove picnic',
+    detail: 'Chef Selin can prep a hamper in under an hour.',
+    imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+    durationMinutes: 60,
+  ),
+];
 
 const _mockNow = TimeOfDay(hour: 10, minute: 08);
 const _pendingStatusColor = Color(0xFFF7C948);
@@ -139,11 +170,12 @@ class _DiaryTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final orderedEntries = [...entries]
       ..sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
-    if (orderedEntries.isEmpty) {
+    final timelineEntries = _mergeSuggestions(orderedEntries);
+    if (timelineEntries.isEmpty) {
       return const SizedBox.shrink();
     }
-    final earliestStart = orderedEntries.first.startMinutes;
-    final latestEnd = orderedEntries
+    final earliestStart = timelineEntries.first.startMinutes;
+    final latestEnd = timelineEntries
         .map((entry) => entry.endMinutes)
         .reduce((value, element) => element > value ? element : value);
     final timelineStartHour = earliestStart ~/ 60;
@@ -158,7 +190,7 @@ class _DiaryTimeline extends StatelessWidget {
         : hourCount * _hourSlotHeight;
 
     double canvasHeight = totalHeight.toDouble();
-    for (final entry in orderedEntries) {
+    for (final entry in timelineEntries) {
       final topMinutes = entry.startMinutes - timelineStartMinutes;
       final top = (topMinutes / 60) * _hourSlotHeight;
       final eventExtent = math.max(
@@ -205,7 +237,7 @@ class _DiaryTimeline extends StatelessWidget {
                         right: 0,
                         child: const _NowIndicator(),
                       ),
-                    for (final entry in orderedEntries)
+                    for (final entry in timelineEntries)
                       _MeetingPositioned(
                         entry: entry,
                         timelineStartMinutes: timelineStartMinutes,
@@ -397,33 +429,56 @@ class _MeetingBlock extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
     final isConfirmed = entry.status == _BookingStatus.confirmed;
-    final statusColor = isConfirmed ? colorScheme.primary : _pendingStatusColor;
+    final isPending = entry.status == _BookingStatus.pending;
+    final isSuggested = entry.status == _BookingStatus.suggested;
+    final statusColor = isConfirmed
+        ? colorScheme.primary
+        : isPending
+        ? _pendingStatusColor
+        : colorScheme.secondary;
     final accentColor = isPast
         ? statusColor.withValues(alpha: 0.35)
         : statusColor.withValues(alpha: 0.85);
-    final shadow = isPast
-        ? BoxShadow()
-        : BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: 0.06),
-            blurRadius: 3,
-            offset: const Offset(0, 3),
-          );
+    final backgroundColor = isSuggested
+        ? colorScheme.surfaceVariant.withValues(alpha: 0.35)
+        : colorScheme.surface;
+    final borderColor = isSuggested
+        ? accentColor.withValues(alpha: 0.45)
+        : statusColor.withValues(alpha: 0.18);
+    final boxShadow = isSuggested
+        ? [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ]
+        : [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ];
 
     return Opacity(
       opacity: isPast ? 0.75 : 1,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          color: colorScheme.surface,
-          border: Border.all(color: statusColor.withValues(alpha: 0.18)),
-          boxShadow: [shadow],
+          color: backgroundColor,
+          border: Border.all(color: borderColor),
+          boxShadow: boxShadow,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _StatusPill(color: accentColor),
+              _StatusPill(
+                color: accentColor,
+                dotted: isSuggested,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -461,19 +516,39 @@ class _MeetingBlock extends StatelessWidget {
 }
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.color});
+  const _StatusPill({required this.color, this.dotted = false});
 
   final Color color;
+  final bool dotted;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 6,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(999),
-      ),
+    if (!dotted) {
+      return Container(
+        width: 6,
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(999),
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 2),
+          child: Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+      }),
     );
   }
 }
@@ -508,4 +583,53 @@ String _formatHourLabel(int hour) {
       ? normalized - 12
       : normalized;
   return '$displayHour $period';
+}
+
+List<_ItineraryEntry> _mergeSuggestions(List<_ItineraryEntry> entries) {
+  if (entries.isEmpty) return entries;
+  final augmented = <_ItineraryEntry>[];
+  var suggestionIndex = 0;
+
+  for (var i = 0; i < entries.length; i++) {
+    augmented.add(entries[i]);
+    if (i == entries.length - 1) continue;
+
+    final gapMinutes = entries[i + 1].startMinutes - entries[i].endMinutes;
+    if (gapMinutes < 120 || suggestionIndex >= _suggestionPool.length) {
+      continue;
+    }
+
+    final template = _suggestionPool[suggestionIndex++];
+    final proposedStart = entries[i].endMinutes + 30;
+    final proposedEnd = math.min(
+      proposedStart + template.durationMinutes,
+      entries[i + 1].startMinutes - 15,
+    );
+
+    if (proposedEnd - proposedStart < 30) {
+      continue;
+    }
+
+    augmented.add(
+      _ItineraryEntry(
+        start: _minutesToTimeOfDay(proposedStart),
+        end: _minutesToTimeOfDay(proposedEnd),
+        title: template.title,
+        detail: template.detail,
+        imageUrl: template.imageUrl,
+        status: _BookingStatus.suggested,
+        isSuggestion: true,
+      ),
+    );
+  }
+
+  augmented.sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
+  return augmented;
+}
+
+TimeOfDay _minutesToTimeOfDay(int minutes) {
+  final normalized = minutes.clamp(0, 24 * 60 - 1);
+  final hour = normalized ~/ 60;
+  final minute = normalized % 60;
+  return TimeOfDay(hour: hour, minute: minute);
 }
