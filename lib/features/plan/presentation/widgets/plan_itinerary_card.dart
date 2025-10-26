@@ -22,7 +22,7 @@ class PlanItineraryCard extends StatelessWidget {
       title: 'Slow breakfast at Zest',
       detail: 'Chef Selin tasting menu',
       imageUrl: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17',
-      status: _BookingStatus.confirmed,
+      status: _BookingStatus.pending,
     ),
     const _ItineraryEntry(
       start: TimeOfDay(hour: 14, minute: 0),
@@ -125,7 +125,7 @@ class _ItineraryEntry {
 
 enum _BookingStatus { confirmed, pending }
 
-const _mockNow = TimeOfDay(hour: 10, minute: 0);
+const _mockNow = TimeOfDay(hour: 10, minute: 08);
 const _pendingStatusColor = Color(0xFFF7C948);
 
 class _DiaryTimeline extends StatelessWidget {
@@ -401,6 +401,13 @@ class _MeetingBlock extends StatelessWidget {
     final accentColor = isPast
         ? statusColor.withValues(alpha: 0.35)
         : statusColor.withValues(alpha: 0.85);
+    final shadow = isPast
+        ? BoxShadow()
+        : BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.06),
+            blurRadius: 3,
+            offset: const Offset(0, 3),
+          );
 
     return Opacity(
       opacity: isPast ? 0.75 : 1,
@@ -409,13 +416,7 @@ class _MeetingBlock extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           color: colorScheme.surface,
           border: Border.all(color: statusColor.withValues(alpha: 0.18)),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          boxShadow: [shadow],
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
