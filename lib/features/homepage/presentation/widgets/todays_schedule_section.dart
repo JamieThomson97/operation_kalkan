@@ -3,7 +3,7 @@ import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class TodaysScheduleSection extends StatelessWidget {
-  const TodaysScheduleSection({super.key, required this.onViewFullDay});
+  const TodaysScheduleSection({required this.onViewFullDay, super.key});
 
   final VoidCallback onViewFullDay;
 

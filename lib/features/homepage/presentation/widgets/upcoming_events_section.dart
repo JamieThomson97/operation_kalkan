@@ -60,7 +60,7 @@ class UpcomingEventsSection extends StatelessWidget {
             final cardWidth =
                 (availableWidth - spacing * (crossAxisCount - 1)) /
                 crossAxisCount;
-            final cardHeight = 200.0;
+            const cardHeight = 200.0;
             final childAspectRatio = cardWidth / cardHeight;
 
             return GridView.builder(

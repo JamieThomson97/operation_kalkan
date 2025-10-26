@@ -88,7 +88,7 @@ class RecommendedForYouSection extends StatelessWidget {
                 : estimatedHeights.reduce(
                     (a, b) => a > b ? a : b,
                   );
-            final cardHeight = 360.0;
+            const cardHeight = 360.0;
             return SizedBox(
               height: cardHeight,
               child: ListView.separated(
@@ -152,7 +152,7 @@ class _RecommendedFiltersBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final foregroundColor = colorScheme.onSurface.withValues(alpha: 0.8);
-    final backgroundColor = Colors.white;
+    const backgroundColor = Colors.white;
     final shadowColor = colorScheme.shadow.withValues(alpha: 0.08);
 
     return SingleChildScrollView(

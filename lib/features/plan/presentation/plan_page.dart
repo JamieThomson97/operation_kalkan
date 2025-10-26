@@ -19,15 +19,15 @@ class PlanPage extends StatelessWidget {
       bottom: false,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 120),
-        children: [
-          const SizedBox(height: 32),
-          const _ItineraryCard(),
-          const SizedBox(height: 24),
-          const _PlanOverviewCard(),
-          const SizedBox(height: 24),
-          const _EssentialsCard(),
-          const SizedBox(height: 24),
-          const _LocalTipsCard(),
+        children: const [
+          SizedBox(height: 32),
+          _ItineraryCard(),
+          SizedBox(height: 24),
+          _PlanOverviewCard(),
+          SizedBox(height: 24),
+          _EssentialsCard(),
+          SizedBox(height: 24),
+          _LocalTipsCard(),
         ],
       ),
     );
@@ -117,8 +117,8 @@ class _PlanOverviewCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(
                   child: _PlanMetric(
                     label: 'Meals booked',
@@ -137,8 +137,8 @@ class _PlanOverviewCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(
                   child: _PlanMetric(
                     label: 'Experiences',
@@ -225,25 +225,25 @@ class _ItineraryCard extends StatelessWidget {
   const _ItineraryCard();
 
   static final _items = <_ItineraryEntry>[
-    _ItineraryEntry(
+    const _ItineraryEntry(
       time: '08:00',
       title: 'Sunrise Pilates by the marina',
       detail: 'Mat + towels prepped',
       imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
     ),
-    _ItineraryEntry(
+    const _ItineraryEntry(
       time: '10:30',
       title: 'Slow breakfast at Zest',
       detail: 'Chef Selin tasting menu',
       imageUrl: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17',
     ),
-    _ItineraryEntry(
+    const _ItineraryEntry(
       time: '14:00',
       title: 'Sail to Black Island coves',
       detail: 'Skipper + mezze onboard',
       imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21',
     ),
-    _ItineraryEntry(
+    const _ItineraryEntry(
       time: '19:30',
       title: 'Chef’s table at Theia',
       detail: '7-course coastal harvest',
@@ -447,17 +447,17 @@ class _EssentialsCard extends StatelessWidget {
   const _EssentialsCard();
 
   static final _items = [
-    _EssentialItem(
+    const _EssentialItem(
       icon: Icons.sailing_rounded,
       label: 'Harbor transfer',
       supporting: 'Driver Yusuf · 09:45',
     ),
-    _EssentialItem(
+    const _EssentialItem(
       icon: Icons.spa_rounded,
       label: 'Wellness hold',
       supporting: 'Palmarina Hammam · 13:00',
     ),
-    _EssentialItem(
+    const _EssentialItem(
       icon: Icons.chair_alt_rounded,
       label: 'Dinner confirmation',
       supporting: 'Chef’s table · 19:30',
