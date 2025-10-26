@@ -3,7 +3,9 @@ import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class TodaysScheduleSection extends StatelessWidget {
-  const TodaysScheduleSection({super.key});
+  const TodaysScheduleSection({super.key, required this.onViewFullDay});
+
+  final VoidCallback onViewFullDay;
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +29,21 @@ class TodaysScheduleSection extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
-              'Full day',
-              style: textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: supportingColor,
+            TextButton(
+              onPressed: onViewFullDay,
+              style: TextButton.styleFrom(
+                foregroundColor: supportingColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
+              child: const Text('Full day'),
             ),
           ],
         ),

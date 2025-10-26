@@ -5,6 +5,7 @@ import 'package:operation_kalkan/features/homepage/presentation/widgets/homepage
 import 'package:operation_kalkan/features/homepage/presentation/widgets/recommended_for_you_section.dart';
 import 'package:operation_kalkan/features/homepage/presentation/widgets/todays_schedule_section.dart';
 import 'package:operation_kalkan/features/homepage/presentation/widgets/upcoming_events_section.dart';
+import 'package:operation_kalkan/features/plan/presentation/plan_page.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -22,12 +23,21 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
+  void _goToPlan() => _onDestinationSelected(2);
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     final glassSurface = colorScheme.surface;
     final glassHighlight = colorScheme.primary.withOpacity(0.08);
+
+    final pages = [
+      _HomeTab(onViewPlan: _goToPlan),
+      const _PlaceholderPage(label: 'Explore'),
+      const PlanPage(),
+      const _PlaceholderPage(label: 'Profile'),
+    ];
 
     return Scaffold(
       extendBody: true,
@@ -94,30 +104,74 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      body: Stack(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: pages,
+      ),
+    );
+  }
+}
+
+class _HomeTab extends StatelessWidget {
+  const _HomeTab({required this.onViewPlan});
+
+  final VoidCallback onViewPlan;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SafeArea(
+          top: false,
+          bottom: false,
+          child: ListView(
+            children: [
+              const HomepageHeader(),
+              const SizedBox(height: 24),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: RecommendedForYouSection(),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: TodaysScheduleSection(onViewFullDay: onViewPlan),
+              ),
+              const SizedBox(height: 24),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: UpcomingEventsSection(),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlaceholderPage extends StatelessWidget {
+  const _PlaceholderPage({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SafeArea(
-            top: false,
-            bottom: false,
-            child: ListView(
-              children: const [
-                HomepageHeader(),
-                SizedBox(height: 24),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      RecommendedForYouSection(),
-                      SizedBox(height: 24),
-                      TodaysScheduleSection(),
-                      SizedBox(height: 24),
-                      UpcomingEventsSection(),
-                      SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ],
+          Icon(Icons.workspaces_outline, size: 48, color: colorScheme.outline),
+          const SizedBox(height: 12),
+          Text(
+            '$label coming soon',
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.outline,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
