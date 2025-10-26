@@ -14,7 +14,6 @@ class PlanItineraryCard extends StatelessWidget {
       title: 'Sunrise Pilates by the marina',
       detail: 'Mat + towels prepped',
       imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
-      status: _BookingStatus.confirmed,
     ),
     const _ItineraryEntry(
       start: TimeOfDay(hour: 10, minute: 30),
@@ -30,7 +29,6 @@ class PlanItineraryCard extends StatelessWidget {
       title: 'Sail to Black Island coves',
       detail: 'Skipper + mezze onboard',
       imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21',
-      status: _BookingStatus.confirmed,
     ),
     const _ItineraryEntry(
       start: TimeOfDay(hour: 19, minute: 30),
@@ -101,6 +99,39 @@ class PlanItineraryCard extends StatelessWidget {
   }
 }
 
+class _PositionedEntry {
+  const _PositionedEntry({
+    required this.entry,
+    required this.top,
+    required this.isPast,
+  });
+
+  final _ItineraryEntry entry;
+  final double top;
+  final bool isPast;
+}
+
+class _HourLabel {
+  const _HourLabel({required this.label, required this.top});
+
+  final String label;
+  final double top;
+}
+
+class _HourBand {
+  const _HourBand({
+    required this.top,
+    required this.height,
+    required this.isEven,
+    required this.isFirst,
+  });
+
+  final double top;
+  final double height;
+  final bool isEven;
+  final bool isFirst;
+}
+
 class _ItineraryEntry {
   const _ItineraryEntry({
     required this.start,
@@ -160,6 +191,7 @@ const _mockNow = TimeOfDay(hour: 10, minute: 08);
 const _pendingStatusColor = Color(0xFFF7C948);
 const double _suggestionActionSpacing = 6;
 const double _suggestionActionHeight = 32;
+const double _suggestionTimelinePadding = 16;
 const double _suggestionActionTotalExtent =
     _suggestionActionSpacing + _suggestionActionHeight;
 
@@ -189,14 +221,54 @@ class _DiaryTimeline extends StatelessWidget {
         : (desiredEndHour > 24 ? 24 : desiredEndHour);
     final hourCount = timelineEndHour - timelineStartHour;
     final timelineStartMinutes = timelineStartHour * 60;
-    final totalHeight = hourCount <= 0
-        ? _hourSlotHeight
-        : hourCount * _hourSlotHeight;
+    final spacingBreakpoints = _buildSpacingBreakpoints(
+      timelineEntries,
+      _suggestionTimelinePadding,
+    );
 
-    double canvasHeight = totalHeight.toDouble();
+    double minuteToPixels(int minutes) {
+      final minutesFromStart = minutes - timelineStartMinutes;
+      final baseOffset = (minutesFromStart / 60) * _hourSlotHeight;
+      return baseOffset + _offsetForMinutes(minutes, spacingBreakpoints);
+    }
+
+    final nowMinutes = _mockNow.hour * 60 + _mockNow.minute;
+
+    final hourBands = <_HourBand>[];
+    for (var i = 0; i < hourCount; i++) {
+      final startMinutes = timelineStartMinutes + i * 60;
+      final endMinutes = startMinutes + 60;
+      final top = minuteToPixels(startMinutes);
+      final end = minuteToPixels(endMinutes);
+      hourBands.add(
+        _HourBand(
+          top: top,
+          height: math.max(end - top, 0),
+          isEven: i.isEven,
+          isFirst: i == 0,
+        ),
+      );
+    }
+
+    final hourLabels = <_HourLabel>[];
+    for (var i = 0; i <= hourCount; i++) {
+      final labelMinutes = timelineStartMinutes + i * 60;
+      hourLabels.add(
+        _HourLabel(
+          label: _formatHourLabel(timelineStartHour + i),
+          top: math.max(0, minuteToPixels(labelMinutes) - 6),
+        ),
+      );
+    }
+
+    final timelineExtent = hourCount <= 0
+        ? _hourSlotHeight
+        : minuteToPixels(timelineStartMinutes + hourCount * 60);
+    var canvasHeight = timelineExtent;
+    final positionedEntries = <_PositionedEntry>[];
+
     for (final entry in timelineEntries) {
-      final topMinutes = entry.startMinutes - timelineStartMinutes;
-      final top = (topMinutes / 60) * _hourSlotHeight;
+      final top = minuteToPixels(entry.startMinutes);
       final eventExtent = math.max(
         entry.durationMinutes / 60 * _hourSlotHeight,
         _hourSlotHeight * 0.5,
@@ -209,11 +281,16 @@ class _DiaryTimeline extends StatelessWidget {
         canvasHeight,
         top + desiredExtent + suggestionAllowance,
       );
+      positionedEntries.add(
+        _PositionedEntry(
+          entry: entry,
+          top: top,
+          isPast: entry.endMinutes <= nowMinutes,
+        ),
+      );
     }
 
-    final nowMinutes = _mockNow.hour * 60 + _mockNow.minute;
-    final indicatorMinutes = nowMinutes - timelineStartMinutes;
-    final indicatorTop = (indicatorMinutes / 60) * _hourSlotHeight;
+    final indicatorTop = minuteToPixels(nowMinutes);
     final indicatorWithinTimeline =
         indicatorTop >= 0 && indicatorTop <= canvasHeight;
 
@@ -228,17 +305,14 @@ class _DiaryTimeline extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _TimelineGutter(
-                startHour: timelineStartHour,
-                hourCount: hourCount,
-              ),
+              _TimelineGutter(labels: hourLabels),
               const SizedBox(width: 12),
               Expanded(
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
                     Positioned.fill(
-                      child: _TimelineGrid(hourCount: hourCount),
+                      child: _TimelineGrid(bands: hourBands),
                     ),
                     if (indicatorWithinTimeline)
                       Positioned(
@@ -247,14 +321,14 @@ class _DiaryTimeline extends StatelessWidget {
                         right: 0,
                         child: const _NowIndicator(),
                       ),
-                    for (final entry in timelineEntries)
+                    for (final positioned in positionedEntries)
                       _MeetingPositioned(
-                        entry: entry,
-                        timelineStartMinutes: timelineStartMinutes,
+                        entry: positioned.entry,
+                        top: positioned.top,
                         hourSlotHeight: _hourSlotHeight,
                         canvasHeight: canvasHeight,
                         minExtent: _minMeetingExtent,
-                        isPast: entry.endMinutes <= nowMinutes,
+                        isPast: positioned.isPast,
                       ),
                   ],
                 ),
@@ -268,35 +342,26 @@ class _DiaryTimeline extends StatelessWidget {
 }
 
 class _TimelineGutter extends StatelessWidget {
-  const _TimelineGutter({
-    required this.startHour,
-    required this.hourCount,
-  });
+  const _TimelineGutter({required this.labels});
 
-  final int startHour;
-  final int hourCount;
+  final List<_HourLabel> labels;
 
   @override
   Widget build(BuildContext context) {
     final labelColor = context.colorScheme.onSurfaceVariant.withValues(
       alpha: 0.35,
     );
-    final labelsCount = hourCount + 1;
-
     return SizedBox(
       width: 56,
       child: Stack(
         children: [
-          for (var i = 0; i < labelsCount; i++)
+          for (final label in labels)
             Positioned(
-              top: math.max(
-                0.0,
-                i * _DiaryTimeline._hourSlotHeight - 6,
-              ),
+              top: label.top,
               left: 0,
               right: 0,
               child: Text(
-                _formatHourLabel(startHour + i),
+                label.label,
                 style: context.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: labelColor,
@@ -310,28 +375,30 @@ class _TimelineGutter extends StatelessWidget {
 }
 
 class _TimelineGrid extends StatelessWidget {
-  const _TimelineGrid({required this.hourCount});
+  const _TimelineGrid({required this.bands});
 
-  final int hourCount;
+  final List<_HourBand> bands;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final slots = hourCount <= 0 ? 1 : hourCount;
-
-    return Column(
+    return Stack(
       children: [
-        for (var i = 0; i < slots; i++)
-          Expanded(
+        for (final band in bands)
+          Positioned(
+            top: band.top,
+            left: 0,
+            right: 0,
+            height: band.height,
             child: Container(
               decoration: BoxDecoration(
-                color: i.isEven
+                color: band.isEven
                     ? colorScheme.surface
-                    : colorScheme.surfaceVariant.withValues(alpha: 0.12),
+                    : colorScheme.surfaceContainerHighest.withValues(alpha: 0.12),
                 border: Border(
                   top: BorderSide(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-                    width: i == 0 ? 0.8 : 0.4,
+                    width: band.isFirst ? 0.8 : 0.4,
                   ),
                 ),
               ),
@@ -384,7 +451,7 @@ class _NowIndicator extends StatelessWidget {
 class _MeetingPositioned extends StatelessWidget {
   const _MeetingPositioned({
     required this.entry,
-    required this.timelineStartMinutes,
+    required this.top,
     required this.hourSlotHeight,
     required this.canvasHeight,
     required this.minExtent,
@@ -392,7 +459,7 @@ class _MeetingPositioned extends StatelessWidget {
   });
 
   final _ItineraryEntry entry;
-  final int timelineStartMinutes;
+  final double top;
   final double hourSlotHeight;
   final double canvasHeight;
   final double minExtent;
@@ -400,8 +467,6 @@ class _MeetingPositioned extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topMinutes = entry.startMinutes - timelineStartMinutes;
-    final top = (topMinutes / 60) * hourSlotHeight;
     final height = (entry.durationMinutes / 60) * hourSlotHeight;
     final safeguardedHeight = height <= 0 ? hourSlotHeight * 0.5 : height;
     final targetedHeight = math.max(safeguardedHeight, minExtent);
@@ -409,7 +474,7 @@ class _MeetingPositioned extends StatelessWidget {
     final extraActionExtent = entry.isSuggestion
         ? _suggestionActionTotalExtent
         : 0;
-    final availableForCard = math.max(0.0, maxAvailable - extraActionExtent);
+    final availableForCard = math.max(0, maxAvailable - extraActionExtent);
     final paintHeight = targetedHeight > availableForCard
         ? availableForCard
         : targetedHeight;
@@ -467,7 +532,7 @@ class _MeetingBlock extends StatelessWidget {
         ? statusColor.withValues(alpha: 0.35)
         : statusColor.withValues(alpha: 0.85);
     final backgroundColor = isSuggested
-        ? colorScheme.surfaceVariant.withValues(alpha: 0.35)
+        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.35)
         : colorScheme.surface;
     final borderColor = isSuggested
         ? accentColor.withValues(alpha: 0.45)
@@ -593,7 +658,7 @@ class _StatusPill extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         return Padding(
-          padding: EdgeInsets.symmetric(vertical: 2),
+          padding: const EdgeInsets.symmetric(vertical: 2),
           child: Container(
             width: 6,
             height: 6,
@@ -638,6 +703,38 @@ String _formatHourLabel(int hour) {
       ? normalized - 12
       : normalized;
   return '$displayHour $period';
+}
+
+List<_SpacingBreakpoint> _buildSpacingBreakpoints(
+  List<_ItineraryEntry> entries,
+  double padding,
+) {
+  if (padding <= 0) return const [];
+
+  final breakpoints = <_SpacingBreakpoint>[];
+  for (final entry in entries) {
+    if (!entry.isSuggestion) continue;
+    breakpoints.add(
+      _SpacingBreakpoint(
+        minuteMark: entry.endMinutes,
+        padding: padding,
+      ),
+    );
+  }
+  breakpoints.sort((a, b) => a.minuteMark.compareTo(b.minuteMark));
+  return breakpoints;
+}
+
+double _offsetForMinutes(int minutes, List<_SpacingBreakpoint> breakpoints) {
+  var offset = 0.0;
+  for (final breakpoint in breakpoints) {
+    if (minutes >= breakpoint.minuteMark) {
+      offset += breakpoint.padding;
+    } else {
+      break;
+    }
+  }
+  return offset;
 }
 
 List<_ItineraryEntry> _mergeSuggestions(List<_ItineraryEntry> entries) {
@@ -687,4 +784,14 @@ TimeOfDay _minutesToTimeOfDay(int minutes) {
   final hour = normalized ~/ 60;
   final minute = normalized % 60;
   return TimeOfDay(hour: hour, minute: minute);
+}
+
+class _SpacingBreakpoint {
+  const _SpacingBreakpoint({
+    required this.minuteMark,
+    required this.padding,
+  });
+
+  final int minuteMark;
+  final double padding;
 }
