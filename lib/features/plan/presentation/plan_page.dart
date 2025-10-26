@@ -9,12 +9,31 @@ class PlanPage extends StatelessWidget {
     return SafeArea(
       top: false,
       bottom: false,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 120),
-        children: const [
-          SizedBox(height: 32),
-          PlanItineraryCard(),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Expanded(
+              flex: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  "Today's Itinerary",
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Expanded(
+              child: PlanItineraryCard(),
+            ),
+          ],
+        ),
       ),
     );
   }

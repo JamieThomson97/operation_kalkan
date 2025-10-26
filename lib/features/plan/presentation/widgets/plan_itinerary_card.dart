@@ -7,29 +7,29 @@ class PlanItineraryCard extends StatelessWidget {
 
   static final _items = <_ItineraryEntry>[
     const _ItineraryEntry(
-      time: '08:00',
-      endTime: '09:00',
+      start: TimeOfDay(hour: 8, minute: 0),
+      end: TimeOfDay(hour: 9, minute: 0),
       title: 'Sunrise Pilates by the marina',
       detail: 'Mat + towels prepped',
       imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
     ),
     const _ItineraryEntry(
-      time: '10:30',
-      endTime: '12:00',
+      start: TimeOfDay(hour: 10, minute: 30),
+      end: TimeOfDay(hour: 12, minute: 0),
       title: 'Slow breakfast at Zest',
       detail: 'Chef Selin tasting menu',
       imageUrl: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17',
     ),
     const _ItineraryEntry(
-      time: '14:00',
-      endTime: '17:30',
+      start: TimeOfDay(hour: 14, minute: 0),
+      end: TimeOfDay(hour: 17, minute: 30),
       title: 'Sail to Black Island coves',
       detail: 'Skipper + mezze onboard',
       imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21',
     ),
     const _ItineraryEntry(
-      time: '19:30',
-      endTime: '22:00',
+      start: TimeOfDay(hour: 19, minute: 30),
+      end: TimeOfDay(hour: 22, minute: 0),
       title: 'Chef’s table at Theia',
       detail: '7-course coastal harvest',
       imageUrl: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371',
@@ -48,55 +48,45 @@ class PlanItineraryCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            Expanded(
-              child: Text(
-                'Itinerary',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: headerColor,
-                ),
-              ),
-            ),
             TextButton(
               onPressed: () {},
               style: TextButton.styleFrom(
                 foregroundColor: supportingColor,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 textStyle: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
               ),
               child: const Text('Edit'),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceBright,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.08),
-                blurRadius: 32,
-                offset: const Offset(0, 18),
+        const SizedBox(height: 12),
+        Expanded(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceBright,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.35),
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(22, 20, 22, 24),
-            child: Column(
-              children: [
-                for (var i = 0; i < _items.length; i++) ...[
-                  _ItineraryRow(entry: _items[i]),
-                  if (i != _items.length - 1) const SizedBox(height: 16),
-                ],
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: 0.08),
+                  blurRadius: 32,
+                  offset: const Offset(0, 18),
+                ),
               ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
+              child: _DiaryTimeline(entries: _items),
             ),
           ),
         ),
@@ -107,116 +97,284 @@ class PlanItineraryCard extends StatelessWidget {
 
 class _ItineraryEntry {
   const _ItineraryEntry({
-    required this.time,
-    required this.endTime,
+    required this.start,
+    required this.end,
     required this.title,
     required this.detail,
     required this.imageUrl,
   });
 
-  final String time;
-  final String endTime;
+  final TimeOfDay start;
+  final TimeOfDay end;
   final String title;
   final String detail;
   final String imageUrl;
+
+  int get startMinutes => start.hour * 60 + start.minute;
+  int get endMinutes => end.hour * 60 + end.minute;
+  int get durationMinutes => endMinutes - startMinutes;
 }
 
-class _ItineraryRow extends StatelessWidget {
-  const _ItineraryRow({required this.entry});
+class _DiaryTimeline extends StatelessWidget {
+  const _DiaryTimeline({required this.entries});
+
+  final List<_ItineraryEntry> entries;
+  static const double _hourSlotHeight = 96;
+
+  @override
+  Widget build(BuildContext context) {
+    final orderedEntries = [...entries]
+      ..sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
+    if (orderedEntries.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final earliestStart = orderedEntries.first.startMinutes;
+    final latestEnd = orderedEntries
+        .map((entry) => entry.endMinutes)
+        .reduce((value, element) => element > value ? element : value);
+    final timelineStartHour = earliestStart ~/ 60;
+    final desiredEndHour = (latestEnd / 60).ceil();
+    final timelineEndHour = desiredEndHour <= timelineStartHour
+        ? timelineStartHour + 1
+        : (desiredEndHour > 24 ? 24 : desiredEndHour);
+    final hourCount = timelineEndHour - timelineStartHour;
+    final timelineStartMinutes = timelineStartHour * 60;
+    final totalHeight = hourCount <= 0
+        ? _hourSlotHeight
+        : hourCount * _hourSlotHeight;
+
+    final canvasHeight = totalHeight;
+
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        scrollbars: false,
+        physics: const ClampingScrollPhysics(),
+      ),
+      child: SingleChildScrollView(
+        child: SizedBox(
+          height: canvasHeight,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              _TimelineGutter(
+                startHour: timelineStartHour,
+                hourCount: hourCount,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fill(
+                      child: _TimelineGrid(hourCount: hourCount),
+                    ),
+                    for (final entry in orderedEntries)
+                      _MeetingPositioned(
+                        entry: entry,
+                        timelineStartMinutes: timelineStartMinutes,
+                        hourSlotHeight: _hourSlotHeight,
+                        canvasHeight: canvasHeight,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TimelineGutter extends StatelessWidget {
+  const _TimelineGutter({
+    required this.startHour,
+    required this.hourCount,
+  });
+
+  final int startHour;
+  final int hourCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final labelColor = context.colorScheme.onSurfaceVariant.withValues(
+      alpha: 0.6,
+    );
+    final labelsCount = hourCount + 1;
+
+    return SizedBox(
+      width: 56,
+      child: Stack(
+        children: [
+          for (var i = 0; i < labelsCount; i++)
+            Positioned(
+              top: i * _DiaryTimeline._hourSlotHeight - (i == 0 ? 8 : 10),
+              left: 0,
+              right: 0,
+              child: Text(
+                _formatHourLabel(startHour + i),
+                style: context.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: labelColor,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineGrid extends StatelessWidget {
+  const _TimelineGrid({required this.hourCount});
+
+  final int hourCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final slots = hourCount <= 0 ? 1 : hourCount;
+
+    return Column(
+      children: [
+        for (var i = 0; i < slots; i++)
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: i.isEven
+                    ? colorScheme.surface
+                    : colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.12,
+                      ),
+                border: Border(
+                  top: BorderSide(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                    width: i == 0 ? 0.8 : 0.4,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MeetingPositioned extends StatelessWidget {
+  const _MeetingPositioned({
+    required this.entry,
+    required this.timelineStartMinutes,
+    required this.hourSlotHeight,
+    required this.canvasHeight,
+  });
+
+  final _ItineraryEntry entry;
+  final int timelineStartMinutes;
+  final double hourSlotHeight;
+  final double canvasHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    final topMinutes = entry.startMinutes - timelineStartMinutes;
+    final top = (topMinutes / 60) * hourSlotHeight;
+    final height = (entry.durationMinutes / 60) * hourSlotHeight;
+    final safeguardedHeight = height <= 0 ? hourSlotHeight * 0.5 : height;
+    final maxAvailable = canvasHeight - top;
+    final paintHeight = safeguardedHeight > maxAvailable
+        ? maxAvailable
+        : safeguardedHeight;
+
+    return Positioned(
+      top: top,
+      left: 4,
+      right: 4,
+      child: SizedBox(
+        height: paintHeight,
+        child: _MeetingBlock(entry: entry),
+      ),
+    );
+  }
+}
+
+class _MeetingBlock extends StatelessWidget {
+  const _MeetingBlock({required this.entry});
 
   final _ItineraryEntry entry;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
-    final timeStyle = textTheme.labelLarge?.copyWith(
-      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-      fontWeight: FontWeight.w700,
-      letterSpacing: 0.2,
-    );
-    final endTimeStyle = textTheme.bodySmall?.copyWith(
-      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0.2,
-    );
-    final titleStyle = textTheme.titleSmall?.copyWith(
-      fontSize: 12,
-      fontWeight: FontWeight.w700,
-      color: colorScheme.onSurface,
-    );
-    final detailStyle = textTheme.bodySmall?.copyWith(
-      color: colorScheme.onSurfaceVariant,
-      fontSize: 10,
-    );
-    final cardColor = colorScheme.surface;
-    final borderColor = colorScheme.outlineVariant.withValues(alpha: 0.35);
+    final textTheme = context.textTheme;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 62,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(entry.time, style: timeStyle),
-                const SizedBox(height: 2),
-                Text(entry.endTime, style: endTimeStyle),
-              ],
-            ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
-        ),
-        const SizedBox(width: 2),
-        Expanded(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: borderColor),
-              boxShadow: [
-                BoxShadow(
-                  color: colorScheme.shadow.withValues(alpha: 0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
-              child: Row(
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ItineraryThumbnail(imageUrl: entry.imageUrl),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry.title,
-                          style: titleStyle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Confirmed booking',
+                        style: textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                          color: colorScheme.primary.withValues(alpha: 0.9),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          entry.detail,
-                          style: detailStyle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    entry.title,
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurface,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    entry.detail,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-          ),
+            const SizedBox(width: 12),
+            _ItineraryThumbnail(imageUrl: entry.imageUrl),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -229,10 +387,10 @@ class _ItineraryThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: SizedBox(
-        width: 40,
-        height: 40,
+        width: 54,
+        height: 54,
         child: SafeNetworkImage(
           imageUrl: imageUrl,
           fit: BoxFit.cover,
@@ -240,4 +398,15 @@ class _ItineraryThumbnail extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatHourLabel(int hour) {
+  final normalized = hour % 24;
+  final period = normalized >= 12 ? 'PM' : 'AM';
+  final displayHour = normalized == 0
+      ? 12
+      : normalized > 12
+      ? normalized - 12
+      : normalized;
+  return '$displayHour $period';
 }
