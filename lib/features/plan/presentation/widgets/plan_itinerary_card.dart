@@ -158,6 +158,10 @@ const _suggestionPool = <_SuggestionTemplate>[
 
 const _mockNow = TimeOfDay(hour: 10, minute: 08);
 const _pendingStatusColor = Color(0xFFF7C948);
+const double _suggestionActionSpacing = 6;
+const double _suggestionActionHeight = 32;
+const double _suggestionActionTotalExtent =
+    _suggestionActionSpacing + _suggestionActionHeight;
 
 class _DiaryTimeline extends StatelessWidget {
   const _DiaryTimeline({required this.entries});
@@ -198,7 +202,13 @@ class _DiaryTimeline extends StatelessWidget {
         _hourSlotHeight * 0.5,
       );
       final desiredExtent = math.max(eventExtent, _minMeetingExtent);
-      canvasHeight = math.max(canvasHeight, top + desiredExtent);
+      final suggestionAllowance = entry.isSuggestion
+          ? _suggestionActionTotalExtent
+          : 0;
+      canvasHeight = math.max(
+        canvasHeight,
+        top + desiredExtent + suggestionAllowance,
+      );
     }
 
     final nowMinutes = _mockNow.hour * 60 + _mockNow.minute;
@@ -396,19 +406,36 @@ class _MeetingPositioned extends StatelessWidget {
     final safeguardedHeight = height <= 0 ? hourSlotHeight * 0.5 : height;
     final targetedHeight = math.max(safeguardedHeight, minExtent);
     final maxAvailable = canvasHeight - top;
-    final paintHeight = targetedHeight > maxAvailable
-        ? maxAvailable
+    final extraActionExtent = entry.isSuggestion
+        ? _suggestionActionTotalExtent
+        : 0;
+    final availableForCard = math.max(0.0, maxAvailable - extraActionExtent);
+    final paintHeight = targetedHeight > availableForCard
+        ? availableForCard
         : targetedHeight;
+    final totalHeight = paintHeight + extraActionExtent;
 
     return Positioned(
       top: top,
       left: 0,
       right: 0,
       child: SizedBox(
-        height: paintHeight,
-        child: _MeetingBlock(
-          entry: entry,
-          isPast: isPast,
+        height: totalHeight,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: paintHeight,
+              child: _MeetingBlock(
+                entry: entry,
+                isPast: isPast,
+              ),
+            ),
+            if (entry.isSuggestion) ...[
+              const SizedBox(height: _suggestionActionSpacing),
+              const _SuggestionActionRow(),
+            ],
+          ],
         ),
       ),
     );
@@ -510,6 +537,34 @@ class _MeetingBlock extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SuggestionActionRow extends StatelessWidget {
+  const _SuggestionActionRow();
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colorScheme.onSurfaceVariant.withValues(alpha: 0.85);
+
+    return TextButton(
+      onPressed: () {},
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: const Size(0, _suggestionActionHeight),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        alignment: Alignment.centerLeft,
+        visualDensity: VisualDensity.compact,
+        textStyle: context.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
+        ),
+      ),
+      child: Text(
+        'See more for this time ⟶',
+        style: TextStyle(color: color),
       ),
     );
   }
