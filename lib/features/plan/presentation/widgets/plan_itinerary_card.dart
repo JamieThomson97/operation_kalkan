@@ -50,27 +50,6 @@ class PlanItineraryCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                foregroundColor: supportingColor,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                textStyle: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              child: const Text('Edit'),
-            ),
-          ],
-        ),
         const SizedBox(height: 12),
         Expanded(
           child: DecoratedBox(
@@ -394,7 +373,9 @@ class _TimelineGrid extends StatelessWidget {
               decoration: BoxDecoration(
                 color: band.isEven
                     ? colorScheme.surface
-                    : colorScheme.surfaceContainerHighest.withValues(alpha: 0.12),
+                    : colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.12,
+                      ),
                 border: Border(
                   top: BorderSide(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.4),
@@ -476,7 +457,7 @@ class _MeetingPositioned extends StatelessWidget {
         : 0;
     final availableForCard = math.max(0, maxAvailable - extraActionExtent);
     final paintHeight = targetedHeight > availableForCard
-        ? availableForCard
+        ? availableForCard as double
         : targetedHeight;
     final totalHeight = paintHeight + extraActionExtent;
 
