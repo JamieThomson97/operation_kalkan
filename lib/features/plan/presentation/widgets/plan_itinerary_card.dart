@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
@@ -120,6 +122,7 @@ class _DiaryTimeline extends StatelessWidget {
 
   final List<_ItineraryEntry> entries;
   static const double _hourSlotHeight = 96;
+  static const double _minMeetingExtent = 118;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +146,17 @@ class _DiaryTimeline extends StatelessWidget {
         ? _hourSlotHeight
         : hourCount * _hourSlotHeight;
 
-    final canvasHeight = totalHeight;
+    double canvasHeight = totalHeight.toDouble();
+    for (final entry in orderedEntries) {
+      final topMinutes = entry.startMinutes - timelineStartMinutes;
+      final top = (topMinutes / 60) * _hourSlotHeight;
+      final eventExtent = math.max(
+        entry.durationMinutes / 60 * _hourSlotHeight,
+        _hourSlotHeight * 0.5,
+      );
+      final desiredExtent = math.max(eventExtent, _minMeetingExtent);
+      canvasHeight = math.max(canvasHeight, top + desiredExtent);
+    }
 
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
@@ -175,6 +188,7 @@ class _DiaryTimeline extends StatelessWidget {
                         timelineStartMinutes: timelineStartMinutes,
                         hourSlotHeight: _hourSlotHeight,
                         canvasHeight: canvasHeight,
+                        minExtent: _minMeetingExtent,
                       ),
                   ],
                 ),
@@ -209,7 +223,10 @@ class _TimelineGutter extends StatelessWidget {
         children: [
           for (var i = 0; i < labelsCount; i++)
             Positioned(
-              top: i * _DiaryTimeline._hourSlotHeight - (i == 0 ? 8 : 10),
+              top: math.max(
+                0.0,
+                i * _DiaryTimeline._hourSlotHeight - 6,
+              ),
               left: 0,
               right: 0,
               child: Text(
@@ -267,12 +284,14 @@ class _MeetingPositioned extends StatelessWidget {
     required this.timelineStartMinutes,
     required this.hourSlotHeight,
     required this.canvasHeight,
+    required this.minExtent,
   });
 
   final _ItineraryEntry entry;
   final int timelineStartMinutes;
   final double hourSlotHeight;
   final double canvasHeight;
+  final double minExtent;
 
   @override
   Widget build(BuildContext context) {
@@ -280,10 +299,11 @@ class _MeetingPositioned extends StatelessWidget {
     final top = (topMinutes / 60) * hourSlotHeight;
     final height = (entry.durationMinutes / 60) * hourSlotHeight;
     final safeguardedHeight = height <= 0 ? hourSlotHeight * 0.5 : height;
+    final targetedHeight = math.max(safeguardedHeight, minExtent);
     final maxAvailable = canvasHeight - top;
-    final paintHeight = safeguardedHeight > maxAvailable
+    final paintHeight = targetedHeight > maxAvailable
         ? maxAvailable
-        : safeguardedHeight;
+        : targetedHeight;
 
     return Positioned(
       top: top,
