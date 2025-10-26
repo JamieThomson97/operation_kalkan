@@ -5,7 +5,9 @@ import 'package:operation_kalkan/shared/theme/context_theme_extensions.dart';
 import 'package:operation_kalkan/shared/widgets/safe_network_image.dart';
 
 class PlanItineraryCard extends StatelessWidget {
-  const PlanItineraryCard({super.key});
+  const PlanItineraryCard({super.key, required this.date});
+
+  final DateTime date;
 
   static final _items = <_ItineraryEntry>[
     const _ItineraryEntry(
@@ -42,6 +44,7 @@ class PlanItineraryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entries = _entriesFor(date);
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
     final headerColor = colorScheme.onSurface;
@@ -69,11 +72,66 @@ class PlanItineraryCard extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
-              child: _DiaryTimeline(entries: _items),
+              child: entries.isEmpty
+                  ? _EmptyItineraryState(
+                      headlineColor: headerColor,
+                      supportingColor: supportingColor,
+                      textTheme: textTheme,
+                    )
+                  : _DiaryTimeline(entries: entries),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  List<_ItineraryEntry> _entriesFor(DateTime targetDate) {
+    if (DateUtils.isSameDay(
+      DateUtils.dateOnly(targetDate),
+      DateUtils.dateOnly(DateTime.now()),
+    )) {
+      return _items;
+    }
+    return const <_ItineraryEntry>[];
+  }
+}
+
+class _EmptyItineraryState extends StatelessWidget {
+  const _EmptyItineraryState({
+    required this.headlineColor,
+    required this.supportingColor,
+    required this.textTheme,
+  });
+
+  final Color headlineColor;
+  final Color supportingColor;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.trip_origin,
+            color: supportingColor,
+            size: 32,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'No plans scheduled',
+            style: textTheme.titleMedium?.copyWith(color: headlineColor),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Pick a date to explore or add activities.',
+            style: textTheme.bodyMedium?.copyWith(color: supportingColor),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
